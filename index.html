@@ -1,0 +1,1993 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Casio Apuntes</title>
+<style>
+:root{
+  --bg:#f4f3ef; --panel:#ffffff; --ink:#1d1d1b; --muted:#6b6a65; --line:#dedcd5;
+  --accent:#2f5d50; --accent-ink:#ffffff; --warn:#a4461f; --warn-bg:#fbeee6;
+  --lcd-bg:#c5ccb4; --lcd-px:#1e2419; --code:#f7f6f2;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#171816; --panel:#202220; --ink:#ecebe6; --muted:#9a998f; --line:#34362f;
+    --accent:#7fb8a4; --accent-ink:#10201a; --warn:#f0a07a; --warn-bg:#3a2419; --code:#1b1c1a;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{display:flex;align-items:baseline;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+header h1{font-size:18px;margin:0}
+header span{color:var(--muted);font-size:13px}
+main{display:grid;grid-template-columns:minmax(0,1fr) 560px;gap:18px;padding:18px 20px;max-width:1400px;margin:0 auto}
+@media (max-width:1100px){main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+label{font-size:13px;color:var(--muted)}
+.opt{font-size:14px;color:var(--ink);display:flex;gap:6px;align-items:center;cursor:pointer}
+select,input[type=text]{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}
+button{font:inherit;font-size:14px;padding:5px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:7px 12px}
+.seg button.on{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.tools{display:flex;flex-wrap:wrap;gap:4px;margin:10px 0}
+.tools button{min-width:34px;padding:4px 7px}
+.tools .sep{width:8px}
+.ed{display:flex;position:relative;border:1px solid var(--line);border-radius:8px;background:var(--code);overflow:hidden}
+#gut,#gut2{position:absolute;top:0;bottom:0;left:0;width:52px;margin:0;padding:10px 8px 10px 0;font:15px/1.5 Consolas,"Cascadia Mono",monospace;color:var(--muted);text-align:right;overflow:hidden;user-select:none;border-right:1px solid var(--line)}
+#gut b,#gut2 b{color:var(--accent)}
+textarea{flex:1;min-width:0;margin-left:52px;height:62vh;min-height:340px;resize:vertical;font:15px/1.5 Consolas,"Cascadia Mono",monospace;padding:10px;border:0;outline:none;background:transparent;color:var(--ink);tab-size:2;white-space:pre;overflow-x:auto}
+.status{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted);margin-top:6px}
+.status b{color:var(--ink);font-weight:600}
+.status .over{color:var(--warn)}
+.lcdwrap{background:#9aa58a;padding:14px;border-radius:10px;overflow-x:auto}
+canvas#lcd{image-rendering:pixelated;display:block;margin:0 auto}
+.pnav{display:flex;align-items:center;gap:8px;margin:10px 0}
+.pnav .t{flex:1;text-align:center;font-weight:600}
+.pages{max-height:170px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.pages div{padding:4px 10px;cursor:pointer;font-size:14px;display:flex;gap:8px}
+.pages div:hover{background:var(--code)}
+.pages div.on{background:var(--accent);color:var(--accent-ink)}
+.pages b{width:24px;text-align:right;font-weight:500;opacity:.7}
+#txtEdit{background-image:linear-gradient(to right,transparent calc(10px + 21ch),var(--warn) calc(10px + 21ch),var(--warn) calc(11px + 21ch),transparent calc(11px + 21ch));background-attachment:local}
+#calcView .lcdwrap{padding:8px;max-width:300px;margin:0 auto}
+.warn{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:10px}
+.stats{font-size:13px;color:var(--muted);margin:10px 0}
+.hint{font-size:13px;color:var(--muted);margin:8px 0 0}
+details{margin-top:14px}
+summary{cursor:pointer;font-weight:600}
+table.help{border-collapse:collapse;font-size:13px;width:100%;margin-top:8px}
+table.help td{border-bottom:1px solid var(--line);padding:4px 6px;vertical-align:top}
+td code,p code{font:13px Consolas,monospace;background:var(--code);padding:1px 4px;border-radius:4px}
+ol{padding-left:20px;margin:8px 0;font-size:14px}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);padding:18px;max-width:600px;width:calc(100% - 32px)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h2{margin:0 0 10px;font-size:17px}
+dialog .grid{display:grid;grid-template-columns:auto 1fr auto;gap:8px 10px;align-items:center;margin:12px 0}
+dialog input[type=range]{width:100%}
+.impGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:860px){.impGrid{grid-template-columns:1fr}}
+.impBox{display:flex;flex-direction:column;min-width:0}
+.step{font-size:14px;font-weight:600;margin:0 0 8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.step b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:12px}
+.impSum{font-weight:400;font-size:13px;color:var(--muted)}
+#impIn,#impOut{height:380px;min-height:220px;resize:vertical;margin:0;border:1px solid var(--line);border-radius:8px;background:var(--code)}
+#impIn{white-space:pre-wrap}
+#impFiles{max-width:100%}
+#impDlg{overflow-x:hidden}
+.impPrev{height:380px;overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--code);padding:10px}
+.impPrev pre{margin:0;font:14px/1.35 Consolas,"Cascadia Mono",monospace}
+.impPrev pre .t{color:var(--accent);font-weight:700}
+.impPrev pre .off{opacity:.4}
+.impPrev .pg{display:inline-block;margin:0 8px 10px 0;vertical-align:top}
+.impPrev .pg canvas{display:block;image-rendering:pixelated;border-radius:3px;width:256px;max-width:100%}
+.impPrev .pg span{display:block;font-size:12px;color:var(--muted);margin-top:3px;max-width:256px}
+.impPrev .empty{color:var(--muted);font-size:14px;padding:30px 10px;text-align:center}
+.impFoot{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+@media (max-width:860px){.impFoot{grid-template-columns:1fr}}
+#imgPrev{image-rendering:pixelated;background:var(--lcd-bg);display:block;margin:8px auto;max-width:100%}
+</style>
+</head>
+<body>
+<header>
+  <h1>Casio Apuntes</h1>
+  <span>Fórmulas y apuntes para la fx-9750GIII</span>
+</header>
+<main>
+  <section class="card">
+    <div class="row">
+      <label for="nb">Cuaderno</label>
+      <select id="nb"></select>
+      <button id="nbNew">+ Nuevo</button>
+      <button id="nbDel">Borrar</button>
+      <span style="flex:1"></span>
+      <label for="fname">Archivo</label>
+      <input id="fname" type="text" maxlength="8" size="9" spellcheck="false"><span>.py</span>
+    </div>
+    <div class="tools" id="tools"></div>
+    <div class="ed"><pre id="gut"></pre><textarea id="src" spellcheck="false"></textarea></div>
+    <div class="status" id="status"></div>
+    <details>
+      <summary>Cómo escribir (sintaxis)</summary>
+      <table class="help">
+        <tr><td><code># Título</code></td><td>Empieza un tema. En modo dibujo es una página (si no entra, sigue en “Título (2)”). En modo texto es una sección del índice.</td></tr>
+        <tr><td><code>{a+b}/{c}</code></td><td>Fracción con barra. Se pueden anidar: <code>{CF}/{1-{cv}/{p}}</code></td></tr>
+        <tr><td><code>x^2</code> · <code>x^{n-1}</code></td><td>Exponente. Sin llaves toma el número/palabra pegado (y un signo adelante): <code>(1+i)^-n</code></td></tr>
+        <tr><td><code>i_1</code> · <code>V_{real}</code></td><td>Subíndice. Se combinan: <code>x_i^2</code></td></tr>
+        <tr><td><code>sqrt{b^2-4ac}</code></td><td>Raíz cuadrada.</td></tr>
+        <tr><td><code>bar{x}</code></td><td>Barra arriba (promedio).</td></tr>
+        <tr><td><code>Σ_{t=1}^{n}</code></td><td>Sumatoria con límites.</td></tr>
+        <tr><td><code>( … )</code> <code>[ … ]</code></td><td>Si adentro hay una fracción, se agrandan solos.</td></tr>
+        <tr><td><code>| Año | Cuota |</code><br><code>|---|---|</code><br><code>| 1 | 100 |</code></td><td>Tabla. La fila <code>|---|</code> marca el encabezado (es opcional). Los números se alinean a la derecha. En las celdas también van fórmulas.</td></tr>
+        <tr><td><code>graf: x=0..100; y=50x; y=2000+30x</code></td><td>Gráfico (modo dibujo). Opcional: <code>y=0..6000</code> (rango vertical), <code>alto=30</code> (en píxeles). La 1ª función va con línea llena, la 2ª punteada. Funciones: <code>sqrt ln log exp sin cos tan abs</code>, <code>pi</code>, <code>e</code>.</td></tr>
+        <tr><td><code>img: nombre</code></td><td>Imagen (modo dibujo). Se agrega con el botón 🖼 Imagen.</td></tr>
+        <tr><td><code>&gt; texto</code></td><td>Línea centrada.</td></tr>
+        <tr><td><code>---</code></td><td>Línea divisoria.</td></tr>
+        <tr><td><code>\{</code> <code>\^</code> <code>\|</code></td><td>Escribe el símbolo tal cual.</td></tr>
+      </table>
+    </details>
+  </section>
+
+  <section class="side">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div class="seg" id="modeSeg">
+          <button data-m="draw">Dibujo (RUN)</button>
+          <button data-m="text">Texto (editor)</button>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px;gap:16px">
+        <label class="opt"><input type="checkbox" id="wide"> Renglones anchos (sin cortar a la pantalla)</label>
+        <label class="opt" id="uniWrap"><input type="checkbox" id="uni"> Tildes y símbolos</label>
+      </div>
+      <p class="hint" id="modeHint"></p>
+
+      <div id="drawView">
+        <div class="lcdwrap"><canvas id="lcd"></canvas></div>
+        <div class="pnav">
+          <button id="prev">◀</button>
+          <div class="t" id="ptitle"></div>
+          <button id="next">▶</button>
+        </div>
+        <div class="pages" id="pages"></div>
+      </div>
+      <div id="textView" hidden>
+        <p class="hint" style="margin:0 0 6px">El archivo tal cual va a la calculadora. <b>También lo podés editar acá</b>: los cambios pasan solos al cuaderno de la izquierda. La raya naranja marca el carácter 21.</p>
+        <div class="ed"><pre id="gut2"></pre><textarea id="txtEdit" spellcheck="false"></textarea></div>
+      </div>
+      <div id="warns"></div>
+    </div>
+    <div class="card">
+      <div id="calcView" hidden style="margin-bottom:14px">
+        <div class="lcdwrap"><canvas id="tlcd" tabindex="0" title="Hacé clic y usá las flechas del teclado"></canvas></div>
+        <div class="pnav">
+          <button id="tUp" title="Subir">▲</button><button id="tDown" title="Bajar">▼</button>
+          <button id="tLeft" title="Izquierda">◀</button><button id="tRight" title="Derecha">▶</button>
+          <div class="t" id="tpos" style="font-weight:500;font-size:13px"></div>
+          <select id="tfile" hidden></select>
+        </div>
+        <p class="hint" style="margin:0">Así se ve en el editor de la calculadora (aproximado: 21 caracteres × 6 renglones). Sigue a lo que escribís, o movete con las flechas.</p>
+      </div>
+      <div class="row">
+        <button class="primary" id="dl">Descargar</button>
+        <button id="copy">Copiar código</button>
+      </div>
+      <div class="stats" id="stats"></div>
+      <details>
+        <summary>Pasarlo a la calculadora</summary>
+        <ol>
+          <li>Conectá la calculadora por USB. Cuando pregunte, elegí <b>USB Flash</b> (F1).</li>
+          <li>Copiá el o los <b>.py</b> a la raíz de la unidad (no adentro de carpetas).</li>
+          <li>Expulsá la unidad desde Windows antes de desconectar.</li>
+          <li><b>MENU → Python</b> y elegí el archivo.</li>
+        </ol>
+        <p class="hint"><b>Modo dibujo:</b> F1 (RUN). Aparece la lista de páginas: escribí el número y <b>EXE</b>, o solo <b>EXE</b> para la siguiente. <b>0</b> muestra más títulos. Escribí una palabra (con ALPHA) para <b>buscar</b>. Con un tema en pantalla, <b>AC/ON</b> pasa a la pantalla siguiente (la flechita ▸ abajo a la derecha avisa que hay más). En la última, vuelve al menú. Para ir directo a una pantalla escribí tema.pantalla, por ejemplo <b>2.2</b> y EXE.</p>
+        <p class="hint"><b>Modo texto:</b> abrilo (OPEN) y leé con las flechas. Al principio tenés el índice con el número de fila de cada tema.</p>
+      </details>
+    </div>
+  </section>
+</main>
+
+<dialog id="imgDlg">
+  <h2>Agregar imagen</h2>
+  <input type="file" id="imgFile" accept="image/*">
+  <canvas id="imgPrev" width="384" height="192"></canvas>
+  <div class="grid">
+    <label for="imgW">Ancho</label><input type="range" id="imgW" min="8" max="128" value="128"><span id="imgWv"></span>
+    <label for="imgT">Umbral</label><input type="range" id="imgT" min="10" max="245" value="128"><span id="imgTv"></span>
+    <span></span><label class="opt"><input type="checkbox" id="imgD" checked> Tramado (mejor para fotos)</label><span></span>
+    <span></span><label class="opt"><input type="checkbox" id="imgI"> Invertir colores</label><span></span>
+    <label for="imgN">Nombre</label><input type="text" id="imgN" maxlength="20" spellcheck="false"><span></span>
+  </div>
+  <div class="row" style="justify-content:flex-end">
+    <button id="imgCancel">Cancelar</button>
+    <button class="primary" id="imgOk">Insertar</button>
+  </div>
+</dialog>
+
+<dialog id="impDlg" style="max-width:1150px">
+  <h2>Importar texto</h2>
+  <div class="impGrid">
+    <section class="impBox">
+      <div class="step"><b>1</b> Pegá tus apuntes como estén</div>
+      <textarea id="impIn" spellcheck="false" placeholder="Pegá acá tu texto: teoría, fórmulas, lo que sea…"></textarea>
+      <div class="row" style="margin-top:6px"><label for="impFiles">o elegí archivos (.txt / .py):</label><input type="file" id="impFiles" accept=".txt,.py,.md,text/plain" multiple></div>
+    </section>
+    <section class="impBox">
+      <div class="step"><b>2</b> Así queda <span id="impSum" class="impSum"></span></div>
+      <div class="row" style="justify-content:space-between;margin-bottom:6px">
+        <div class="seg" id="impTabs"><button data-v="prev" class="on">Vista previa</button><button data-v="code">Código (para corregir)</button></div>
+        <span class="hint" style="margin:0" id="impModeLbl"></span>
+      </div>
+      <div id="impPrev" class="impPrev"></div>
+      <textarea id="impOut" spellcheck="false" hidden></textarea>
+    </section>
+  </div>
+  <div class="impFoot">
+    <div>
+      <div class="step"><b>3</b> Qué ordenar</div>
+      <div class="row" style="gap:14px">
+        <label class="opt"><input type="checkbox" id="impT" checked> Títulos</label>
+        <label class="opt"><input type="checkbox" id="impJ" checked> Unir renglones cortados</label>
+        <label class="opt"><input type="checkbox" id="impF" checked> Fórmulas</label>
+        <label class="opt"><input type="checkbox" id="impTab" checked> Tablas</label>
+      </div>
+    </div>
+    <div>
+      <div class="step"><b>4</b> Dónde</div>
+      <div class="row" style="gap:10px">
+        <label class="opt"><input type="radio" name="impDest" value="new" checked> Cuaderno nuevo</label>
+        <input type="text" id="impName" placeholder="Nombre" size="14">
+        <select id="impMode"><option value="text">Modo texto</option><option value="draw">Modo dibujo</option></select>
+      </div>
+      <div class="row" style="margin-top:6px"><label class="opt"><input type="radio" name="impDest" value="add"> Agregar al final del cuaderno abierto</label></div>
+    </div>
+  </div>
+  <div class="row" style="justify-content:flex-end;margin-top:14px">
+    <button id="impCancel">Cancelar</button>
+    <button class="primary" id="impOk">Importar</button>
+  </div>
+</dialog>
+
+<script>
+"use strict";
+const W = 128, H = 64, SEG = 120, TXT_W = 21, MAXL = 150;
+
+/* ---------- Fuente 5x7 (fila 7 = descendente) ---------- */
+const FONT_SRC = {
+"A":[".###.","#...#","#...#","#####","#...#","#...#","#...#"],
+"B":["####.","#...#","#...#","####.","#...#","#...#","####."],
+"C":[".###.","#...#","#....","#....","#....","#...#",".###."],
+"D":["###..","#..#.","#...#","#...#","#...#","#..#.","###.."],
+"E":["#####","#....","#....","####.","#....","#....","#####"],
+"F":["#####","#....","#....","####.","#....","#....","#...."],
+"G":[".###.","#...#","#....","#.###","#...#","#...#",".####"],
+"H":["#...#","#...#","#...#","#####","#...#","#...#","#...#"],
+"I":["###",".#.",".#.",".#.",".#.",".#.","###"],
+"J":["..###","...#.","...#.","...#.","...#.","#..#.",".##.."],
+"K":["#...#","#..#.","#.#..","##...","#.#..","#..#.","#...#"],
+"L":["#....","#....","#....","#....","#....","#....","#####"],
+"M":["#...#","##.##","#.#.#","#.#.#","#...#","#...#","#...#"],
+"N":["#...#","#...#","##..#","#.#.#","#..##","#...#","#...#"],
+"O":[".###.","#...#","#...#","#...#","#...#","#...#",".###."],
+"P":["####.","#...#","#...#","####.","#....","#....","#...."],
+"Q":[".###.","#...#","#...#","#...#","#.#.#","#..#.",".##.#"],
+"R":["####.","#...#","#...#","####.","#.#..","#..#.","#...#"],
+"S":[".####","#....","#....",".###.","....#","....#","####."],
+"T":["#####","..#..","..#..","..#..","..#..","..#..","..#.."],
+"U":["#...#","#...#","#...#","#...#","#...#","#...#",".###."],
+"V":["#...#","#...#","#...#","#...#","#...#",".#.#.","..#.."],
+"W":["#...#","#...#","#...#","#.#.#","#.#.#","#.#.#",".#.#."],
+"X":["#...#","#...#",".#.#.","..#..",".#.#.","#...#","#...#"],
+"Y":["#...#","#...#",".#.#.","..#..","..#..","..#..","..#.."],
+"Z":["#####","....#","...#.","..#..",".#...","#....","#####"],
+"0":[".###.","#...#","#..##","#.#.#","##..#","#...#",".###."],
+"1":[".#.","##.",".#.",".#.",".#.",".#.","###"],
+"2":[".###.","#...#","....#","...#.","..#..",".#...","#####"],
+"3":["#####","...#.","..#..","...#.","....#","#...#",".###."],
+"4":["...#.","..##.",".#.#.","#..#.","#####","...#.","...#."],
+"5":["#####","#....","####.","....#","....#","#...#",".###."],
+"6":["..##.",".#...","#....","####.","#...#","#...#",".###."],
+"7":["#####","....#","...#.","..#..",".#...",".#...",".#..."],
+"8":[".###.","#...#","#...#",".###.","#...#","#...#",".###."],
+"9":[".###.","#...#","#...#",".####","....#","...#.",".##.."],
+"a":[".....",".....",".###.","....#",".####","#...#",".####"],
+"b":["#....","#....","#.##.","##..#","#...#","#...#","####."],
+"c":[".....",".....",".###.","#....","#....","#...#",".###."],
+"d":["....#","....#",".##.#","#..##","#...#","#...#",".####"],
+"e":[".....",".....",".###.","#...#","#####","#....",".###."],
+"f":["..##",".#..",".#..","###.",".#..",".#..",".#.."],
+"g":[".....",".....",".####","#...#","#...#",".####","....#",".###."],
+"h":["#....","#....","#.##.","##..#","#...#","#...#","#...#"],
+"i":[".#.","...","##.",".#.",".#.",".#.","###"],
+"j":["...#","....","..##","...#","...#","...#","#..#",".##."],
+"k":["#...","#...","#..#","#.#.","##..","#.#.","#..#"],
+"l":["##.",".#.",".#.",".#.",".#.",".#.","###"],
+"m":[".....",".....","##.#.","#.#.#","#.#.#","#.#.#","#.#.#"],
+"n":[".....",".....","#.##.","##..#","#...#","#...#","#...#"],
+"o":[".....",".....",".###.","#...#","#...#","#...#",".###."],
+"p":[".....",".....","####.","#...#","#...#","####.","#....","#...."],
+"q":[".....",".....",".####","#...#","#...#",".####","....#","....#"],
+"r":[".....",".....","#.##.","##..#","#....","#....","#...."],
+"s":[".....",".....",".####","#....",".###.","....#","####."],
+"t":[".#..",".#..","###.",".#..",".#..",".#.#","..#."],
+"u":[".....",".....","#...#","#...#","#...#","#..##",".##.#"],
+"v":[".....",".....","#...#","#...#","#...#",".#.#.","..#.."],
+"w":[".....",".....","#...#","#...#","#.#.#","#.#.#",".#.#."],
+"x":[".....",".....","#...#",".#.#.","..#..",".#.#.","#...#"],
+"y":[".....",".....","#...#","#...#","#...#",".####","....#",".###."],
+"z":[".....",".....","#####","...#.","..#..",".#...","#####"],
+"!":["#","#","#","#","#",".","#"],
+"\"":["#.#","#.#","...","...","...","...","..."],
+"#":[".#.#.",".#.#.","#####",".#.#.","#####",".#.#.",".#.#."],
+"$":["..#..",".####","#.#..",".###.","..#.#","####.","..#.."],
+"%":["##...","##..#","...#.","..#..",".#...","#..##","...##"],
+"&":[".##..","#..#.","#.#..",".#...","#.#.#","#..#.",".##.#"],
+"'":["#","#",".",".",".",".","."],
+"(":["..#",".#.","#..","#..","#..",".#.","..#"],
+")":["#..",".#.","..#","..#","..#",".#.","#.."],
+"*":[".....","..#..","#.#.#",".###.","#.#.#","..#..","....."],
+"+":[".....","..#..","..#..","#####","..#..","..#..","....."],
+",":["..","..","..","..","..",".#",".#","#."],
+"-":["....","....","....","####","....","....","...."],
+".":[".",".",".",".",".",".","#"],
+"/":[".....","....#","...#.","..#..",".#...","#....","....."],
+":":[".",".","#",".",".","#","."],
+";":["..","..",".#","..","..",".#",".#","#."],
+"<":["...#","..#.",".#..","#...",".#..","..#.","...#"],
+"=":[".....",".....","#####",".....","#####",".....","....."],
+">":["#...",".#..","..#.","...#","..#.",".#..","#..."],
+"?":[".###.","#...#","....#","...#.","..#..",".....","..#.."],
+"@":[".###.","#...#","#.###","#.#.#","#.###","#....",".###."],
+"[":["###","#..","#..","#..","#..","#..","###"],
+"\\":[".....","#....",".#...","..#..","...#.","....#","....."],
+"]":["###","..#","..#","..#","..#","..#","###"],
+"^":["..#..",".#.#.","#...#",".....",".....",".....","....."],
+"_":[".....",".....",".....",".....",".....",".....","#####"],
+"`":["#.",".#","..","..","..","..",".."],
+"{":["..#",".#.",".#.","#..",".#.",".#.","..#"],
+"|":["#","#","#","#","#","#","#"],
+"}":["#..",".#.",".#.","..#",".#.",".#.","#.."],
+"~":[".....",".....",".#...","#.#.#","...#.",".....","....."],
+"·":[".",".",".","#",".",".","."],
+"×":[".....","#...#",".#.#.","..#..",".#.#.","#...#","....."],
+"÷":[".....","..#..",".....","#####",".....","..#..","....."],
+"±":["..#..","..#..","#####","..#..","..#..",".....","#####"],
+"≤":["...#","..#.",".#..","..#.","...#","....","####"],
+"≥":["#...",".#..","..#.",".#..","#...","....","####"],
+"≠":["...#.","...#.","#####","..#..","#####",".#...",".#..."],
+"≈":[".....",".##.#","#..#.",".....",".##.#","#..#.","....."],
+"∞":[".....",".....",".#.#.","#.#.#",".#.#.",".....","....."],
+"→":[".....","...#.","....#","#####","....#","...#.","....."],
+"←":[".....",".#...","#....","#####","#....",".#...","....."],
+"⇒":[".....","...#.","#####","....#","#####","...#.","....."],
+"π":[".....",".....","#####",".#.#.",".#.#.",".#.#.",".#..#"],
+"Σ":["#####","#....",".#...","..#..",".#...","#....","#####"],
+"Δ":[".....","..#..",".#.#.",".#.#.","#...#","#...#","#####"],
+"α":[".....",".....",".##.#","#..#.","#..#.","#..#.",".##.#"],
+"β":[".###.","#...#","####.","#...#","#...#","####.","#....","#...."],
+"δ":["..##.",".#...","..#..",".###.","#...#","#...#",".###."],
+"θ":[".###.","#...#","#...#","#####","#...#","#...#",".###."],
+"λ":["#....",".#...",".#...","..#..",".#.#.","#...#","#...#"],
+"μ":[".....",".....","#...#","#...#","#...#","##.##","#.#.#","#...."],
+"σ":[".....",".....",".####","#..#.","#...#","#...#",".###."],
+"∫":["..#",".#.",".#.",".#.",".#.",".#.",".#.","#.."],
+"√":["....#","....#","...#.","...#.","#.#..",".##..","..#.."],
+"°":[".#.","#.#",".#.","...","...","...","..."],
+"á":["...#.","..#..",".###.","....#",".####","#...#",".####"],
+"é":["...#.","..#..",".###.","#...#","#####","#....",".###."],
+"í":["..#",".#.","##.",".#.",".#.",".#.","###"],
+"ó":["...#.","..#..",".###.","#...#","#...#","#...#",".###."],
+"ú":["...#.","..#..","#...#","#...#","#...#","#..##",".##.#"],
+"ñ":[".##.#","#..#.","#.##.","##..#","#...#","#...#","#...#"],
+"Ñ":[".##.#","#..#.","##..#","#.#.#","#..##","#...#","#...#"],
+"¿":["..#..",".....","..#..",".#...","#....","#...#",".###."],
+"¡":["#",".","#","#","#","#","#"]
+};
+const FONT = {};
+for (const [c, rows] of Object.entries(FONT_SRC)) {
+  const w = rows[0].length, cols = [];
+  for (let x = 0; x < w; x++) {
+    let b = 0;
+    for (let r = 0; r < rows.length; r++) if (rows[r][x] === "#") b |= 1 << r;
+    cols.push(b);
+  }
+  FONT[c] = { cols, desc: rows.length > 7 && rows[7].includes("#") };
+}
+FONT[" "] = { cols: [0, 0, 0], desc: false };
+const ALIAS = { "Á":"A","É":"E","Í":"I","Ó":"O","Ú":"U","ü":"u","Ü":"U","–":"-","—":"-","−":"-","‘":"'","’":"'","“":"\"","”":"\"","\t":" ","⋅":"·","•":"·","∙":"·","∑":"Σ","∆":"Δ","µ":"μ"," ":" " };
+/* Equivalentes en texto plano (modo texto sin tildes) */
+const ASCII = { "·":"*","×":"x","÷":"/","±":"+-","≤":"<=","≥":">=","≠":"!=","≈":"~=","∞":"inf","→":"->","←":"<-","⇒":"=>","π":"pi","Σ":"Sum","Δ":"Delta","α":"alfa","β":"beta","δ":"delta","θ":"tita","λ":"lambda","μ":"mu","σ":"sigma","∫":"int","√":"raiz","°":"o","¿":"","¡":"","ñ":"n","Ñ":"N","–":"-","—":"-","−":"-","‘":"'","’":"'","“":"\"","”":"\""," ":" " };
+
+/* ---------- Parser de fórmulas ---------- */
+function ch(c) {
+  const k = FONT[c] ? c : (ALIAS[c] && FONT[ALIAS[c]] ? ALIAS[c] : "?");
+  return { t: "ch", c: k, raw: c, bad: k === "?" && c !== "?" ? c : null };
+}
+const SP = { t: "ch", c: " ", raw: " " };
+const SUPS = { "²": "2", "³": "3", "¹": "1" };
+
+function parse(s) {
+  let i = 0, closed = false;
+  function attach(out, kind, arg) {
+    let prev = out.pop() || { t: "grp", c: [] };
+    if (prev.t !== "scr" || prev[kind]) prev = { t: "scr", b: prev };
+    prev[kind] = arg;
+    out.push(prev);
+  }
+  function scr() {
+    if (s[i] === "{") { i++; return seq("}"); }
+    const out = [];
+    if (s[i] === "-" || s[i] === "+") out.push(ch(s[i++]));
+    while (i < s.length && /[A-Za-z0-9]/.test(s[i])) out.push(ch(s[i++]));
+    if (!out.length && i < s.length) out.push(ch(s[i++]));
+    return out;
+  }
+  function seq(end) {
+    const out = [];
+    while (i < s.length) {
+      const c = s[i];
+      if (end && c === end) { i++; closed = true; return out; }
+      if (c === "\\" && i + 1 < s.length) { out.push(ch(s[i + 1])); i += 2; continue; }
+      if (c === "^" || c === "_") { i++; attach(out, c === "^" ? "sup" : "sub", scr()); continue; }
+      if (SUPS[c]) { i++; attach(out, "sup", [ch(SUPS[c])]); continue; }
+      if (c === "{") {
+        i++;
+        const g = seq("}");
+        if (s[i] === "/" && s[i + 1] === "{") { i += 2; out.push({ t: "frac", n: g, d: seq("}") }); }
+        else out.push({ t: "grp", c: g });
+        continue;
+      }
+      let kw = null;
+      for (const k of ["sqrt", "bar", "frac"]) if (s.startsWith(k + "{", i)) { kw = k; break; }
+      if (kw) {
+        i += kw.length + 1;
+        const a = seq("}");
+        if (kw === "frac") { let d = []; if (s[i] === "{") { i++; d = seq("}"); } out.push({ t: "frac", n: a, d }); }
+        else out.push({ t: kw, c: a });
+        continue;
+      }
+      if (c === "(" || c === "[") {
+        const save = i, cl = c === "(" ? ")" : "]";
+        i++; closed = false;
+        const inner = seq(cl);
+        if (closed) { out.push({ t: "par", o: c, cl, c: inner }); continue; }
+        i = save + 1; out.push(ch(c)); continue;
+      }
+      out.push(ch(c)); i++;
+    }
+    closed = false;
+    return out;
+  }
+  return seq(null);
+}
+function collectBad(nodes, set) {
+  for (const n of nodes) {
+    if (!n) continue;
+    if (n.bad) set.add(n.bad);
+    for (const k of ["c", "n", "d", "sup", "sub"]) if (Array.isArray(n[k])) collectBad(n[k], set);
+    if (n.b) collectBad([n.b], set);
+  }
+}
+
+/* ---------- Bloques: título, texto, tabla, gráfico, imagen… ---------- */
+function splitCells(line) {
+  const t = line.trim().replace(/^\|/, "").replace(/\|$/, "");
+  const cells = []; let cur = "";
+  for (let i = 0; i < t.length; i++) {
+    if (t[i] === "\\" && t[i + 1] === "|") { cur += "\\|"; i++; continue; }
+    if (t[i] === "|") { cells.push(cur.trim()); cur = ""; } else cur += t[i];
+  }
+  cells.push(cur.trim());
+  return cells;
+}
+function getBlocks(text) {
+  const L = text.replace(/\r/g, "").split("\n"), out = [];
+  for (let i = 0; i < L.length; i++) {
+    const ln = L[i];
+    if (/^#/.test(ln)) out.push({ k: "title", t: ln.replace(/^#+\s*/, "").trim() || "Sin título", i });
+    else if (ln.trim() === "") out.push({ k: "blank", i });
+    else if (/^-{3,}\s*$/.test(ln)) out.push({ k: "rule", i });
+    else if (/^\s*\|/.test(ln)) {
+      const rows = [], i0 = i; let header = false;
+      while (i < L.length && /^\s*\|/.test(L[i])) {
+        const cells = splitCells(L[i]);
+        if (cells.every(c => /^:?-+:?$/.test(c))) { if (rows.length === 1) header = true; }
+        else rows.push(cells);
+        i++;
+      }
+      i--;
+      out.push({ k: "table", rows, header, i: i0, e: i });
+    }
+    else if (/^graf:/i.test(ln)) out.push({ k: "graf", s: ln.slice(5), i });
+    else if (/^img:/i.test(ln)) out.push({ k: "img", name: ln.slice(4).trim(), i });
+    else {
+      let s = ln, center = false;
+      if (s.startsWith(">")) { center = true; s = s.slice(1).trimStart(); }
+      out.push({ k: "text", s, center, i });
+    }
+  }
+  return out;
+}
+const isNum = s => /^[-+$]?\s*[\d.,]+\s*%?$/.test(s.trim());
+function fold(s) {
+  return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/sqrt|bar|frac/g, " ").replace(/[^a-z0-9ñ]+/g, " ").replace(/ñ/g, "n");
+}
+
+/* ---------- Layout en píxeles: cajas con ancho (w), ascenso (a) y descenso (d) ---------- */
+function L(ops, x1, y1, x2, y2) { ops.push({ t: "l", x1, y1, x2, y2 }); }
+function lay(n) {
+  switch (n.t) {
+    case "ch": {
+      const g = FONT[n.c];
+      return { w: g.cols.length, a: 7, d: g.desc ? 1 : 0, draw(x, b, ops) { ops.push({ t: "g", c: n.c, x, y: b - 7 }); } };
+    }
+    case "grp": return laySeq(n.c);
+    case "frac": {
+      const nu = laySeq(n.n), de = laySeq(n.d), w = Math.max(nu.w, de.w) + 2;
+      const bar = -4, nb = bar - 1 - nu.d, db = bar + 2 + de.a;
+      return { w, a: nu.a - nb, d: db + de.d, draw(x, b, ops) {
+        L(ops, x, b + bar, x + w - 1, b + bar);
+        nu.draw(x + ((w - nu.w) >> 1), b + nb, ops);
+        de.draw(x + ((w - de.w) >> 1), b + db, ops);
+      } };
+    }
+    case "scr": {
+      const B = lay(n.b), sp = n.sup ? laySeq(n.sup) : null, sb = n.sub ? laySeq(n.sub) : null;
+      if (n.b.t === "ch" && n.b.c === "Σ") {
+        const w = Math.max(B.w, sp ? sp.w : 0, sb ? sb.w : 0);
+        return { w, a: B.a + (sp ? 1 + sp.a + sp.d : 0), d: B.d + (sb ? 1 + sb.a + sb.d : 0), draw(x, b, ops) {
+          B.draw(x + ((w - B.w) >> 1), b, ops);
+          if (sp) sp.draw(x + ((w - sp.w) >> 1), b - B.a - 1 - sp.d, ops);
+          if (sb) sb.draw(x + ((w - sb.w) >> 1), b + B.d + 1 + sb.a, ops);
+        } };
+      }
+      const spB = -B.a + 3, sbB = B.d + 4;
+      const w = B.w + 1 + Math.max(sp ? sp.w : 0, sb ? sb.w : 0);
+      return { w, a: Math.max(B.a, sp ? sp.a - spB : 0), d: Math.max(B.d, sb ? sbB + sb.d : 0), draw(x, b, ops) {
+        B.draw(x, b, ops);
+        if (sp) sp.draw(x + B.w + 1, b + spB, ops);
+        if (sb) sb.draw(x + B.w + 1, b + sbB, ops);
+      } };
+    }
+    case "sqrt": {
+      const c = laySeq(n.c), w = c.w + 7;
+      return { w, a: c.a + 2, d: c.d, draw(x, b, ops) {
+        const T = b - c.a - 2, Bt = b + c.d - 1;
+        L(ops, x, Bt - 2, x + 2, Bt);
+        L(ops, x + 2, Bt, x + 4, T);
+        L(ops, x + 4, T, x + w - 1, T);
+        c.draw(x + 6, b, ops);
+      } };
+    }
+    case "bar": {
+      const c = laySeq(n.c);
+      return { w: c.w, a: c.a + 2, d: c.d, draw(x, b, ops) {
+        L(ops, x, b - c.a - 2, x + c.w - 1, b - c.a - 2);
+        c.draw(x, b, ops);
+      } };
+    }
+    case "par": {
+      const c = laySeq(n.c);
+      if (c.a < 12 && c.d < 6) return laySeq([ch(n.o), { t: "grp", c: n.c }, ch(n.cl)]);
+      const a = c.a + 1, d = c.d + 1, w = c.w + 6;
+      return { w, a, d, draw(x, b, ops) {
+        const T = b - a, Bt = b + d - 1, xr = x + 3 + c.w + 1;
+        if (n.o === "(") { L(ops, x + 1, T, x + 1, T); L(ops, x, T + 1, x, Bt - 1); L(ops, x + 1, Bt, x + 1, Bt); }
+        else { L(ops, x, T, x, Bt); L(ops, x + 1, T, x + 1, T); L(ops, x + 1, Bt, x + 1, Bt); }
+        c.draw(x + 3, b, ops);
+        if (n.cl === ")") { L(ops, xr, T, xr, T); L(ops, xr + 1, T + 1, xr + 1, Bt - 1); L(ops, xr, Bt, xr, Bt); }
+        else { L(ops, xr + 1, T, xr + 1, Bt); L(ops, xr, T, xr, T); L(ops, xr, Bt, xr, Bt); }
+      } };
+    }
+  }
+}
+function laySeq(nodes) {
+  const bs = nodes.map(lay);
+  if (!bs.length) return { w: 0, a: 7, d: 0, draw() {} };
+  let w = -1, a = 0, d = 0;
+  for (const bx of bs) { w += bx.w + 1; a = Math.max(a, bx.a); d = Math.max(d, bx.d); }
+  return { w, a, d, draw(x, b, ops) { for (const bx of bs) { bx.draw(x, b, ops); x += bx.w + 1; } } };
+}
+function wrapNodes(nodes, maxW) {
+  const words = []; let cur = [];
+  for (const n of nodes) { if (n.t === "ch" && n.c === " ") { words.push(cur); cur = []; } else cur.push(n); }
+  words.push(cur);
+  const rows = []; let row = null;
+  for (const wd of words) {
+    if (row === null) { row = wd.slice(); continue; }
+    const cand = row.concat([SP], wd);
+    if (row.length && laySeq(cand).w > maxW) { rows.push(row); row = wd.slice(); }
+    else row = cand;
+  }
+  rows.push(row);
+  return rows;
+}
+
+/* ---------- Gráficos: evaluador de expresiones ---------- */
+function compileExpr(src) {
+  const s = src.replace(/\s+/g, "").replace(/,/g, ".").replace(/[·×]/g, "*").replace(/÷/g, "/").replace(/π/g, "pi").toLowerCase();
+  let i = 0;
+  const FN = { sqrt: Math.sqrt, ln: Math.log, log: Math.log10, exp: Math.exp, sin: Math.sin, cos: Math.cos, tan: Math.tan, abs: Math.abs };
+  function expr() {
+    let v = term();
+    while (s[i] === "+" || s[i] === "-") { const op = s[i++], r = term(), l = v; v = op === "+" ? x => l(x) + r(x) : x => l(x) - r(x); }
+    return v;
+  }
+  function term() {
+    let v = unary();
+    for (;;) {
+      if (s[i] === "*" || s[i] === "/") { const op = s[i++], r = unary(), l = v; v = op === "*" ? x => l(x) * r(x) : x => l(x) / r(x); }
+      else if (i < s.length && /[0-9a-z(.]/.test(s[i])) { const r = pow(), l = v; v = x => l(x) * r(x); }
+      else return v;
+    }
+  }
+  function unary() {
+    if (s[i] === "-") { i++; const v = unary(); return x => -v(x); }
+    if (s[i] === "+") { i++; return unary(); }
+    return pow();
+  }
+  function pow() {
+    const b = atom();
+    if (s[i] === "^") { i++; const e = unary(); return x => Math.pow(b(x), e(x)); }
+    return b;
+  }
+  function atom() {
+    if (s[i] === "(") { i++; const v = expr(); if (s[i] !== ")") throw "falta cerrar un paréntesis"; i++; return v; }
+    let m = s.slice(i).match(/^(\d+\.?\d*|\.\d+)/);
+    if (m) { i += m[0].length; const k = +m[0]; return () => k; }
+    m = s.slice(i).match(/^[a-z]+/);
+    if (m) {
+      const name = m[0];
+      if (FN[name] && s[i + name.length] === "(") { i += name.length; const f = FN[name], a = atom(); return x => f(a(x)); }
+      if (name.startsWith("pi")) { i += 2; return () => Math.PI; }
+      if (name[0] === "x") { i++; return x => x; }
+      if (name[0] === "e") { i++; return () => Math.E; }
+      throw `no entiendo “${name}”`;
+    }
+    throw i < s.length ? `no entiendo “${s[i]}”` : "falta algo al final";
+  }
+  const f = expr();
+  if (i < s.length) throw `sobra “${s.slice(i)}”`;
+  return f;
+}
+const fmtNum = v => String(Number(v.toPrecision(4)));
+function parseGraph(spec) {
+  const g = { x0: -10, x1: 10, y0: null, y1: null, gh: 40, fs: [], errs: [] };
+  for (const it of spec.split(";").map(s => s.trim()).filter(Boolean)) {
+    let m;
+    if ((m = it.match(/^x\s*=\s*(-?[\d.]+)\s*\.\.\s*(-?[\d.]+)$/i))) { g.x0 = +m[1]; g.x1 = +m[2]; }
+    else if ((m = it.match(/^y\s*=\s*(-?[\d.]+)\s*\.\.\s*(-?[\d.]+)$/i))) { g.y0 = +m[1]; g.y1 = +m[2]; }
+    else if ((m = it.match(/^alto\s*=\s*(\d+)$/i))) g.gh = Math.max(12, Math.min(H - 10, +m[1]));
+    else {
+      const e = it.replace(/^y\s*=\s*/i, "");
+      try { g.fs.push({ src: e, f: compileExpr(e) }); } catch (err) { g.errs.push(`“${e}”: ${err}`); }
+    }
+  }
+  if (!(g.x1 > g.x0)) g.errs.push("el rango de x tiene que ser de menor a mayor");
+  return g;
+}
+function drawGraph(g, top, ops) {
+  const gx = 1, gw = W - 2, gh = g.gh, xs = [], ys = g.fs.map(() => []);
+  for (let c = 0; c < gw; c++) xs.push(g.x0 + (g.x1 - g.x0) * c / (gw - 1));
+  g.fs.forEach((fn, k) => xs.forEach(x => { let v; try { v = fn.f(x); } catch (e) { v = NaN; } ys[k].push(v); }));
+  let y0 = g.y0, y1 = g.y1;
+  if (y0 === null || y1 === null || !(y1 > y0)) {
+    const all = ys.flat().filter(Number.isFinite);
+    y0 = Math.min(0, ...all); y1 = Math.max(0, ...all);
+    if (!all.length || y1 - y0 < 1e-9) { y0 -= 1; y1 += 1; }
+  }
+  g.ry0 = y0; g.ry1 = y1;
+  const py = v => top + Math.round((y1 - v) / (y1 - y0) * (gh - 1));
+  const ax = y0 <= 0 && 0 <= y1 ? py(0) : top + gh - 1;
+  const ay = g.x0 <= 0 && 0 <= g.x1 ? gx + Math.round(-g.x0 / (g.x1 - g.x0) * (gw - 1)) : gx;
+  L(ops, gx, ax, gx + gw - 1, ax);
+  L(ops, ay, top, ay, top + gh - 1);
+  L(ops, gx + gw - 2, ax - 1, gx + gw - 1, ax); L(ops, gx + gw - 2, ax + 1, gx + gw - 1, ax);
+  L(ops, ay - 1, top + 1, ay, top); L(ops, ay + 1, top + 1, ay, top);
+  ys.forEach((arr, k) => {
+    let prev = null;
+    arr.forEach((v, c) => {
+      const ok = Number.isFinite(v) && v >= y0 - (y1 - y0) * 0.02 && v <= y1 + (y1 - y0) * 0.02;
+      const p = ok ? { x: gx + c, y: Math.max(top, Math.min(top + gh - 1, py(v))) } : null;
+      if (p && k % 2 === 0 && prev) L(ops, prev.x, prev.y, p.x, p.y);
+      else if (p && k % 2 === 1 && c % 3 === 0) L(ops, p.x, p.y, p.x, p.y);
+      else if (p && k % 2 === 0) L(ops, p.x, p.y, p.x, p.y);
+      prev = p;
+    });
+  });
+}
+
+/* ---------- Imágenes: bits en hexadecimal, fila por fila ---------- */
+function bitsToHex(bits, w, h) {
+  let s = "";
+  const k = (w + 3) >> 2;
+  for (let y = 0; y < h; y++) for (let i = 0; i < k; i++) {
+    let v = 0;
+    for (let t = 0; t < 4; t++) { const x = i * 4 + t; if (x < w && bits[y * w + x]) v |= 8 >> t; }
+    s += v.toString(16);
+  }
+  return s;
+}
+
+/* ---------- Documento → páginas (modo dibujo) ---------- */
+function buildDoc(text, opts) {
+  const pages = [], warns = [], bad = new Set(), wide = opts.wide, maxW = W - 1;
+  let cur = null, y = 0, base = "", part = 1;
+  let topic = -1;
+  function newPage(title, src, cont) {
+    if (!cont) topic++;
+    cur = { title, ops: [], src, pw: W, topic, words: new Set(fold(title).split(" ")) }; pages.push(cur); y = 0;
+  }
+  const addWords = s => { for (const w of fold(s).split(" ")) if (w.length > 1) cur.words.add(w); };
+  function place(h, src, gap = 1) {
+    if (!cur) { base = "Sin título"; part = 1; newPage(base, src); }
+    if (y > 0 && y + h > H) { part++; newPage(base + " (" + part + ")", src, true); }
+    const top = y; y += h + gap; return top;
+  }
+  const growW = x => { cur.pw = Math.max(cur.pw, x + 1); };
+  function textRow(nodes, center, idx) {
+    const rows = wide ? [nodes] : wrapNodes(nodes, maxW);
+    for (const r of rows) {
+      const bx = laySeq(r), d = Math.max(bx.d, 1), h = bx.a + d;
+      const top = place(h, idx);
+      if (!wide && bx.w > maxW) warns.push(`Fila ${idx + 1}: es más ancha que la pantalla. Partila, o activá “Renglones anchos”.`);
+      if (h > H) warns.push(`Fila ${idx + 1}: es más alta que la pantalla.`);
+      const x = center ? Math.max(0, (W - bx.w) >> 1) : 1;
+      bx.draw(x, top + bx.a, cur.ops);
+      growW(x + bx.w);
+    }
+  }
+  for (const blk of getBlocks(text)) {
+    const idx = blk.i;
+    if (blk.k === "title") { base = blk.t; part = 1; newPage(base, idx); continue; }
+    if (blk.k === "blank") { if (cur && y > 0) y += 4; continue; }
+    if (blk.k === "rule") { const top = place(3, idx); L(cur.ops, 0, top + 1, W - 1, top + 1); continue; }
+    if (blk.k === "text") {
+      const nodes = parse(blk.s); collectBad(nodes, bad);
+      textRow(nodes, blk.center, idx);
+      addWords(blk.s); continue;
+    }
+    if (blk.k === "table") {
+      const cells = blk.rows.map(r => r.map(c => { const n = parse(c); collectBad(n, bad); return { bx: laySeq(n), num: isNum(c) }; }));
+      const nc = Math.max(...cells.map(r => r.length)), cw = Array(nc).fill(0);
+      cells.forEach(r => r.forEach((c, j) => { cw[j] = Math.max(cw[j], c.bx.w + 3); }));
+      const X = [1]; for (let j = 0; j < nc; j++) X.push(X[j] + cw[j] + 1);
+      if (!wide && X[nc] > maxW) warns.push(`Tabla de la fila ${idx + 1}: es más ancha que la pantalla. Activá “Renglones anchos” o achicala.`);
+      cells.forEach((r, ri) => {
+        const a = Math.max(7, ...r.map(c => c.bx.a)), d = Math.max(1, ...r.map(c => c.bx.d)), rh = a + d + 2;
+        const T = place(rh + 2, idx + ri, -1), Bt = T + rh + 1;
+        L(cur.ops, X[0], T, X[nc], T); L(cur.ops, X[0], Bt, X[nc], Bt);
+        if (blk.header && ri === 0) L(cur.ops, X[0], Bt - 1, X[nc], Bt - 1);
+        for (const xv of X) L(cur.ops, xv, T, xv, Bt);
+        r.forEach((c, j) => c.bx.draw(c.num ? X[j + 1] - 1 - c.bx.w : X[j] + 2, T + 2 + a, cur.ops));
+        growW(X[nc]);
+      });
+      y += 2;
+      blk.rows.forEach(r => r.forEach(addWords));
+      continue;
+    }
+    if (blk.k === "graf") {
+      const g = parseGraph(blk.s);
+      for (const e of g.errs) warns.push(`Gráfico de la fila ${idx + 1}: ${e}`);
+      if (!g.fs.length) { if (!g.errs.length) warns.push(`Gráfico de la fila ${idx + 1}: falta la función (por ej. y=2x+1).`); continue; }
+      const top = place(g.gh, idx);
+      drawGraph(g, top, cur.ops);
+      textRow(parse(`x: ${fmtNum(g.x0)}..${fmtNum(g.x1)}  y: ${fmtNum(g.ry0)}..${fmtNum(g.ry1)}`), false, idx);
+      continue;
+    }
+    if (blk.k === "img") {
+      const im = opts.images && opts.images[blk.name];
+      if (!im) { warns.push(`Fila ${idx + 1}: no encuentro la imagen “${blk.name}”. Agregala con el botón 🖼 Imagen.`); continue; }
+      const top = place(im.h, idx), x = Math.max(0, (W - im.w) >> 1);
+      cur.ops.push({ t: "B", x, y: top, w: im.w, h: im.h, hex: im.hex });
+      addWords(blk.name);
+    }
+  }
+  if (bad.size) warns.push("Caracteres sin dibujo (salen como ?): " + [...bad].join(" "));
+  if (!pages.length) pages.push({ title: "Sin título", ops: [], src: 0, pw: W, topic: 0, words: new Set() });
+  for (const p of pages) {
+    if (!p.ops.length) {
+      // Página vacía (por ejemplo un título seguido de otro): se muestra el título centrado
+      const rows = wrapNodes([...p.title].map(ch), W - 1).map(laySeq);
+      let yy = Math.max(0, (H - rows.length * 9) >> 1);
+      for (const bx of rows) { bx.draw(Math.max(0, (W - bx.w) >> 1), yy + 7, p.ops); yy += 9; }
+    }
+    p.ops = finalizeOps(p.ops, p.pw);
+    p.segs = p.pw <= W ? 1 : 1 + Math.ceil((p.pw - W) / SEG);
+  }
+  return { pages, warns };
+}
+
+/* Junta letras contiguas en tiras de texto y recorta lo que se sale */
+function finalizeOps(ops, pw) {
+  const gl = ops.filter(o => o.t === "g").filter(o => {
+    const g = FONT[o.c];
+    for (let k = 0; k < g.cols.length; k++) for (let r = 0; r < 8; r++)
+      if (g.cols[k] >> r & 1) { const px = o.x + k, py = o.y + r; if (px < 0 || px >= pw || py < 0 || py >= H) return false; }
+    return true;
+  }).sort((p, q) => p.y - q.y || p.x - q.x);
+  const out = []; let run = null;
+  for (const o of gl) {
+    const w = FONT[o.c].cols.length;
+    if (run && run.y === o.y && run.nx === o.x) { run.s += o.c; run.nx += w + 1; }
+    else { run = { t: "T", x: o.x, y: o.y, s: o.c, nx: o.x + w + 1 }; out.push(run); }
+  }
+  const cl = (v, m) => Math.max(0, Math.min(m - 1, v));
+  for (const o of ops) {
+    if (o.t === "B") out.push(o);
+    if (o.t !== "l") continue;
+    if ((o.y1 < 0 && o.y2 < 0) || (o.y1 >= H && o.y2 >= H)) continue;
+    out.push({ t: "L", x1: cl(o.x1, pw), y1: cl(o.y1, H), x2: cl(o.x2, pw), y2: cl(o.y2, H) });
+  }
+  return out;
+}
+
+/* ---------- Dibujo (mismo algoritmo que en la calculadora). off = corrimiento horizontal ---------- */
+function rasterize(ops, off = 0, more = false) {
+  const px = rasterOps(ops, off);
+  if (more) {
+    for (let x = 123; x < W; x++) for (let y = 57; y < H; y++) px[y * W + x] = 0;
+    for (let j = 0; j < 5; j++) px[(58 + j) * W + 125] = 1;
+    for (let j = 0; j < 3; j++) px[(59 + j) * W + 126] = 1;
+    px[60 * W + 127] = 1;
+  }
+  return px;
+}
+function rasterOps(ops, off) {
+  const px = new Uint8Array(W * H);
+  const set = (x, y) => { x -= off; if (x >= 0 && x < W && y >= 0 && y < H) px[y * W + x] = 1; };
+  for (const o of ops) {
+    if (o.t === "T") {
+      let x = o.x;
+      for (const c of o.s) {
+        for (const b of FONT[c].cols) { for (let r = 0; r < 8; r++) if (b >> r & 1) set(x, o.y + r); x++; }
+        x++;
+      }
+    } else if (o.t === "L") {
+      const { x1: a, y1: b, x2: c, y2: d } = o;
+      const n = Math.max(Math.abs(c - a), Math.abs(d - b), 1);
+      for (let i = 0; i <= n; i++) set(a + Math.floor((2 * (c - a) * i + n) / (2 * n)), b + Math.floor((2 * (d - b) * i + n) / (2 * n)));
+    } else if (o.t === "B") {
+      const k = (o.w + 3) >> 2;
+      for (let j = 0; j < o.h; j++) for (let i = 0; i < k; i++) {
+        const v = parseInt(o.hex[j * k + i], 16);
+        for (let t = 0; t < 4; t++) if (v >> (3 - t) & 1) set(o.x + i * 4 + t, o.y + j);
+      }
+    }
+  }
+  return px;
+}
+
+/* ---------- Exportar modo dibujo ---------- */
+function toAsciiTitle(t) {
+  return t.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\x20-\x7e]/g, "?").replace(/\\/g, "/").replace(/"/g, "'");
+}
+function buildPython(doc, name) {
+  const used = new Set(["?"]);
+  for (const p of doc.pages) for (const o of p.ops) if (o.t === "T") for (const c of o.s) used.add(c);
+  const extra = [...used].filter(c => c.charCodeAt(0) > 126).sort();
+  const code = {};
+  extra.forEach((c, k) => code[c] = 0x80 + k);
+  const hex = v => "\\x" + v.toString(16).padStart(2, "0");
+  const esc = c => code[c] !== undefined ? hex(code[c]) : c === "\\" ? "\\\\" : c === "\"" ? "\\\"" : c;
+  const fontEntries = [...used].sort().map(c => "\"" + esc(c) + "\":\"" + FONT[c].cols.map(hex).join("") + "\"");
+  const opStr = o => o.t === "T" ? `${o.x},${o.y},${[...o.s].map(esc).join("")}`
+    : o.t === "L" ? `L${o.x1},${o.y1},${o.x2},${o.y2}` : `B${o.x},${o.y},${o.w},${o.h},${o.hex}`;
+  const shortTitle = t => {
+    t = toAsciiTitle(t);
+    const m = t.match(/^(.*?)( \(\d+\))$/), b = m ? m[1] : t, suf = m ? m[2] : "";
+    return b.length + suf.length > 17 ? b.slice(0, 17 - suf.length).trimEnd() + suf : t;
+  };
+  // P: pantallas (dibujo, partes a lo ancho). G: temas (título, palabras para buscar, primera pantalla, cantidad)
+  const pagesPy = doc.pages.map(p => `("${p.ops.map(opStr).join("\\n")}",${p.segs}),`);
+  const topics = [];
+  doc.pages.forEach((p, k) => {
+    const t = topics.find(t => t.id === p.topic);
+    if (t) { t.n++; p.words.forEach(w => t.words.add(w)); }
+    else topics.push({ id: p.topic, title: p.title, first: k, n: 1, words: new Set(p.words) });
+  });
+  const topicsPy = topics.map(t => `("${shortTitle(t.title)}","${[...t.words].filter(Boolean).join(" ")}",${t.first},${t.n}),`);
+  return [
+    `# ${name}.py - generado con Casio Apuntes`,
+    `from casioplot import *`,
+    `K=(0,0,0)`,
+    `O=0`,
+    `F={${fontEntries.join(",")}}`,
+    `P=[`,
+    ...pagesPy,
+    `]`,
+    `G=[`,
+    ...topicsPy,
+    `]`,
+    `def T(x,y,s):`,
+    `  x-=O`,
+    `  for c in s:`,
+    `    if x>127:return`,
+    `    for b in F.get(c,F["?"]):`,
+    `      if 0<=x<128:`,
+    `        b=ord(b)`,
+    `        for r in range(8):`,
+    `          if b>>r&1:set_pixel(x,y+r,K)`,
+    `      x+=1`,
+    `    x+=1`,
+    `def L(a,b,c,d):`,
+    `  a-=O;c-=O`,
+    `  if max(a,c)<0 or min(a,c)>127:return`,
+    `  n=max(abs(c-a),abs(d-b),1)`,
+    `  for i in range(n+1):`,
+    `    x=a+(2*(c-a)*i+n)//(2*n)`,
+    `    if 0<=x<128:set_pixel(x,b+(2*(d-b)*i+n)//(2*n),K)`,
+    `def B(x,y,w,h,s):`,
+    `  x-=O;k=(w+3)//4`,
+    `  for j in range(h):`,
+    `    for i in range(k):`,
+    `      v=int(s[j*k+i],16)`,
+    `      for t in range(4):`,
+    `        u=x+i*4+t`,
+    `        if v>>3-t&1 and 0<=u<128:set_pixel(u,y+j,K)`,
+    `def Z():`,
+    `  for x in range(123,128):`,
+    `    for y in range(57,64):set_pixel(x,y,(255,255,255))`,
+    `  for j in range(5):set_pixel(125,58+j,K)`,
+    `  for j in range(3):set_pixel(126,59+j,K)`,
+    `  set_pixel(127,60,K)`,
+    `def D(p,o,z):`,
+    `  global O`,
+    `  O=o`,
+    `  clear_screen()`,
+    `  s=P[p][0]`,
+    `  if s:`,
+    `    for e in s.split("\\n"):`,
+    `      if e[0]=="L":`,
+    `        a=[int(v) for v in e[1:].split(",")]`,
+    `        L(a[0],a[1],a[2],a[3])`,
+    `      elif e[0]=="B":`,
+    `        a=e[1:].split(",")`,
+    `        B(int(a[0]),int(a[1]),int(a[2]),int(a[3]),a[4])`,
+    `      else:`,
+    `        a=e.split(",",2)`,
+    `        T(int(a[0]),int(a[1]),a[2])`,
+    `  if z:Z()`,
+    `  show_screen()`,
+    `def S(t,j):`,
+    `  a=G[t][2];w=[]`,
+    `  for p in range(a,a+G[t][3]):`,
+    `    for k in range(P[p][1]):w.append((p,k))`,
+    `  for i in range(min(j,len(w)-1),len(w)):`,
+    `    D(w[i][0],w[i][1]*${SEG},i<len(w)-1)`,
+    `    try:`,
+    `      while 1:pass`,
+    `    except KeyboardInterrupt:`,
+    `      pass`,
+    `def M():`,
+    `  n=len(G);p=-1;m=0;l=None`,
+    `  print("AC/ON: pasar pantalla")`,
+    `  print("2.3=tema 2,pantalla 3")`,
+    `  while 1:`,
+    `    s=l if l else list(range(m,min(m+5,n)))`,
+    `    for i in s[:5]:print(i+1,G[i][0][:17])`,
+    `    if l and len(l)>5:print("(+",len(l)-5,"mas)")`,
+    `    l=None`,
+    `    r=input("Nro/texto/EXE:")`,
+    `    if r=="0":`,
+    `      m=m+5 if m+5<n else 0`,
+    `      continue`,
+    `    j=0`,
+    `    if r=="":`,
+    `      p=(p+1)%n`,
+    `    else:`,
+    `      try:`,
+    `        if "." in r:`,
+    `          a,b=r.split(".")`,
+    `          q=int(a)-1;j=max(int(b)-1,0)`,
+    `        else:q=int(r)-1`,
+    `      except:`,
+    `        w=r.lower()`,
+    `        l=[i for i in range(n) if w in G[i][1]]`,
+    `        if not l:print("No encontrado:",r)`,
+    `        continue`,
+    `      if q<0 or q>=n:continue`,
+    `      p=q`,
+    `    m=p//5*5`,
+    `    S(p,j)`,
+    `M()`,
+    ``
+  ].join("\n");
+}
+
+/* ---------- Modo texto: fórmulas armadas con caracteres ---------- */
+function tr(n, o) {
+  const c = n.bad || n.raw || n.c;
+  if (o.uni) return c;
+  if (ASCII[c] !== undefined) return ASCII[c];
+  const f = c.normalize("NFD").replace(/[̀-ͯ]/g, "");
+  return /^[\x20-\x7e]*$/.test(f) ? f : "?";
+}
+function lin(nodes, o) { return nodes.map(n => linNode(n, o)).join(""); }
+function wrapLin(nodes, o) { const s = lin(nodes, o); return s.length > 1 && /[+\-*\/ =<>]/.test(s.slice(1)) ? "(" + s + ")" : s; }
+function linNode(n, o) {
+  switch (n.t) {
+    case "ch": return tr(n, o);
+    case "grp": return lin(n.c, o);
+    case "frac": return wrapLin(n.n, o) + "/" + wrapLin(n.d, o);
+    case "scr": return linNode(n.b, o) + (n.sub ? "_" + wrapLin(n.sub, o) : "") + (n.sup ? "^" + wrapLin(n.sup, o) : "");
+    case "sqrt": return (o.uni ? "√" : "raiz") + "(" + lin(n.c, o) + ")";
+    case "bar": return lin(n.c, o) + "'";
+    case "par": return n.o + lin(n.c, o) + n.cl;
+  }
+}
+const TB = (lines, b) => { const w = Math.max(0, ...lines.map(l => l.length)); return { w, h: lines.length, b, lines: lines.map(l => l.padEnd(w)) }; };
+function tCat(boxes) {
+  if (!boxes.length) return TB([""], 0);
+  const a = Math.max(...boxes.map(x => x.b)), d = Math.max(...boxes.map(x => x.h - 1 - x.b)), rows = Array(a + d + 1).fill("");
+  for (const bx of boxes) { const off = a - bx.b; rows.forEach((_, r) => { const k = r - off; rows[r] += k >= 0 && k < bx.h ? bx.lines[k] : " ".repeat(bx.w); }); }
+  return TB(rows, a);
+}
+function tNodes(nodes, o) {
+  const boxes = []; let buf = "";
+  for (const n of nodes) {
+    if (n.t === "ch") { buf += tr(n, o); continue; }
+    if (buf) { boxes.push(TB([buf], 0)); buf = ""; }
+    boxes.push(tNode(n, o));
+  }
+  if (buf) boxes.push(TB([buf], 0));
+  return tCat(boxes);
+}
+function tParen(C, op, cl) {
+  const h = C.h;
+  return TB(C.lines.map((l, r) => (op === "(" ? (r === 0 ? "/" : r === h - 1 ? "\\" : "|") : "[") + l + (cl === ")" ? (r === 0 ? "\\" : r === h - 1 ? "/" : "|") : "]")), C.b);
+}
+function tNode(n, o) {
+  switch (n.t) {
+    case "ch": return TB([tr(n, o)], 0);
+    case "grp": return tNodes(n.c, o);
+    case "frac": {
+      const N = tNodes(n.n, o), D = tNodes(n.d, o), w = Math.max(N.w, D.w);
+      const c = bx => bx.lines.map(l => " ".repeat((w - bx.w) >> 1) + l);
+      return TB([...c(N), "-".repeat(w), ...c(D)], N.h);
+    }
+    case "scr": {
+      if (n.b.t === "ch" && n.b.c === "Σ") {
+        const S = o.uni ? "Σ" : "Sum", up = n.sup ? lin(n.sup, o) : null, lo = n.sub ? lin(n.sub, o) : null;
+        const ls = [up, S, lo].filter(v => v !== null), w = Math.max(...ls.map(l => l.length));
+        return TB(ls.map(l => " ".repeat((w - l.length) >> 1) + l), up !== null ? 1 : 0);
+      }
+      const suf = (n.sub ? "_" + wrapLin(n.sub, o) : "") + (n.sup ? "^" + wrapLin(n.sup, o) : "");
+      return tCat([tNode(n.b, o), TB([suf], 0)]);
+    }
+    case "sqrt": {
+      const C = tNodes(n.c, o), nm = o.uni ? "√" : "raiz";
+      return C.h === 1 ? TB([nm + "(" + C.lines[0] + ")"], 0) : tCat([TB([nm], 0), tParen(C, "(", ")")]);
+    }
+    case "bar": { const C = tNodes(n.c, o); return TB(["_".repeat(C.w), ...C.lines], C.b + 1); }
+    case "par": { const C = tNodes(n.c, o); return C.h === 1 ? TB([n.o + C.lines[0] + n.cl], 0) : tParen(C, n.o, n.cl); }
+  }
+}
+function wordWrap(s, w) {
+  const out = []; let line = "";
+  for (const word of s.split(" ")) {
+    if (line && (line + " " + word).length > w) { out.push(line); line = word; }
+    else line = line ? line + " " + word : word;
+  }
+  out.push(line);
+  return out;
+}
+/* Cada fila del archivo guarda de qué renglones del cuaderno sale (i..e) y de qué tipo es (k).
+   i = -1 marca filas automáticas (índice, "Sigue en…") que no salen del cuaderno. */
+function buildText(text, opts, name) {
+  const o = { uni: opts.uni }, secs = [], warns = [];
+  let sec = { title: null, src: 0, lines: [] };
+  secs.push(sec);
+  const T = s => o.uni ? s : [...s].map(c => tr({ raw: c }, o)).join("");
+  for (const blk of getBlocks(text)) {
+    const e = blk.e !== undefined ? blk.e : blk.i;
+    const add = (k, ...ls) => sec.lines.push(...ls.map(t => ({ t, i: blk.i, e, k })));
+    if (blk.k === "title") { sec = { title: T(blk.t), src: blk.i, lines: [] }; secs.push(sec); add("title", "=== " + T(blk.t) + " ==="); continue; }
+    if (blk.k === "blank") add("blank", "");
+    else if (blk.k === "rule") add("rule", "-".repeat(TXT_W));
+    else if (blk.k === "text") {
+      const bx = tNodes(parse(blk.s), o);
+      let ls = bx.lines.map(l => l.replace(/\s+$/, ""));
+      if (bx.h === 1 && !opts.wide) ls = wordWrap(ls[0], TXT_W);
+      if (blk.center) ls = ls.map(l => l.length < TXT_W ? " ".repeat((TXT_W - bx.w) >> 1) + l : l);
+      if (bx.h > 1) add("art", "", ...ls, "");
+      else add("text", ...ls);
+    }
+    else if (blk.k === "table") {
+      const rows = blk.rows.map(r => r.map(c => lin(parse(c), o)));
+      const nc = Math.max(...rows.map(r => r.length)), cw = Array(nc).fill(1);
+      rows.forEach(r => r.forEach((c, j) => cw[j] = Math.max(cw[j], c.length)));
+      rows.forEach((r, ri) => {
+        add("table", cw.map((w, j) => { const c = r[j] || ""; return isNum(c) ? c.padStart(w) : c.padEnd(w); }).join("|").replace(/\s+$/, ""));
+        if (ri === 0 && blk.header) add("table", cw.map(w => "-".repeat(w)).join("+"));
+      });
+    }
+    else if (blk.k === "graf") add("graf", "[Grafico: " + parseGraph(blk.s).fs.map(f => "y=" + f.src).join(", ") + "]");
+    else if (blk.k === "img") add("img", "[Imagen: " + T(blk.name) + "]");
+  }
+  const real = secs.filter(s => s.title !== null || s.lines.length);
+  // Repartir en archivos de hasta MAXL filas
+  const budget = MAXL - 2, files = [];
+  const titled = f => f.secs.filter(s => s.title !== null).length;
+  const hdr = n => n > 1 ? n + 2 : 0;
+  const size = f => f.secs.reduce((t, s) => t + s.lines.length, 0);
+  let f = null;
+  for (const s of real) {
+    const chunks = [];
+    for (let k = 0; k < s.lines.length || k === 0; k += budget - 12) {
+      const part = s.lines.slice(k, k + budget - 12);
+      chunks.push({ title: s.title, src: s.src, lines: k === 0 ? part : [{ t: `=== ${s.title || ""} (sigue) ===`, i: -1, e: -1, k: "auto" }, ...part] });
+      if (!s.lines.length) break;
+    }
+    for (const c of chunks) {
+      if (!f || (f.secs.length && hdr(titled(f) + (c.title !== null ? 1 : 0)) + size(f) + c.lines.length > budget)) { f = { secs: [] }; files.push(f); }
+      f.secs.push(c);
+    }
+  }
+  if (!files.length) files.push({ secs: [] });
+  const fileName = k => files.length === 1 ? name : name.slice(0, 7) + (k + 1);
+  const auto = t => ({ t, i: -1, e: -1, k: "auto" });
+  return { warns, files: files.map((fl, k) => {
+    const ts = fl.secs.filter(s => s.title !== null), head = [], body = [];
+    for (const s of fl.secs) { s.at = body.length; body.push(...s.lines); }
+    if (ts.length > 1) {
+      head.push(auto("INDICE (fila):"));
+      const off = ts.length + 2;
+      for (const s of ts) head.push(auto(String(s.at + off + 1).padStart(3) + " " + s.title));
+      head.push(auto(""));
+    }
+    if (k < files.length - 1) body.push(auto(""), auto(">> Sigue en " + fileName(k + 1) + ".py"));
+    const all = head.concat(body);
+    return { name: fileName(k), lines: all.map(l => l.t), src: all.map(l => l.i), end: all.map(l => l.e), kind: all.map(l => l.k), secs: fl.secs };
+  }) };
+}
+
+/* ---------- Del archivo de texto de vuelta al cuaderno ---------- */
+const isSepRow = l => /^-+(\+-+)+$/.test((l || "").trim());
+const isBarRun = (rows, b, c, d) => {
+  // un tramo de "-" es barra de fracción si hay algo arriba y abajo dentro de su ancho
+  const has = r => r >= 0 && r < rows.length && rows[r].slice(c, d + 1).trim() !== "";
+  return has(b - 1) && has(b + 1);
+};
+function barRuns(row) {
+  const out = []; const re = /-+/g; let m;
+  if (isSepRow(row)) return out; // separador de tabla, no es una fracción
+  while ((m = re.exec(row))) out.push([m.index, m.index + m[0].length - 1]);
+  return out;
+}
+function isArtChunk(rows) {
+  return rows.length >= 3 && rows.some((r, b) => barRuns(r).some(([c, d]) => isBarRun(rows, b, c, d)));
+}
+/* Pasa un dibujo hecho con caracteres (fracciones con guiones, paréntesis altos, Sum con límites) a una línea */
+function artLinear(rows) {
+  const w = Math.max(...rows.map(r => r.length));
+  rows = rows.map(r => r.padEnd(w));
+  while (rows.length && !rows[0].trim()) rows.shift();
+  while (rows.length && !rows[rows.length - 1].trim()) rows.pop();
+  if (!rows.length) return "";
+  if (rows.length === 1) return rows[0].trim();
+  // fila base: la que tiene la barra más larga (o la que más texto tiene fuera de barras)
+  let b = -1, best = -1;
+  rows.forEach((r, k) => barRuns(r).forEach(([c, d]) => { if (isBarRun(rows, k, c, d) && d - c > best) { best = d - c; b = k; } }));
+  if (b < 0) b = Math.floor(rows.length / 2);
+  const runs = barRuns(rows[b]).filter(([c, d]) => isBarRun(rows, b, c, d));
+  const cut = (r0, r1, c0, c1) => rows.slice(r0, r1 + 1).map(r => r.slice(c0, c1 + 1));
+  let s = "";
+  for (let c = 0; c < w; c++) {
+    const run = runs.find(([x]) => x === c);
+    if (run) {
+      const [x, d] = run;
+      s += "(" + artLinear(cut(0, b - 1, x, d)) + ")/(" + artLinear(cut(b + 1, rows.length - 1, x, d)) + ")";
+      c = d; continue;
+    }
+    const col = rows.map(r => r[c]), top = col.findIndex(ch => ch !== " "), bot = col.length - 1 - [...col].reverse().findIndex(ch => ch !== " ");
+    const ch0 = rows[b][c];
+    // paréntesis altos dibujados con / | \
+    if (top >= 0 && top < b && bot > b && /[\/\\|\[\]]/.test(ch0) && /[\/\\\[\]]/.test(col[top]) && /[\/\\\[\]]/.test(col[bot])) {
+      s += col[top] === "/" ? "(" : col[top] === "\\" ? ")" : col[top];
+      continue;
+    }
+    // Sum con límites arriba y abajo
+    if (rows[b].startsWith("Sum", c) || ch0 === "Σ") {
+      const len = ch0 === "Σ" ? 1 : 3, a = Math.max(0, c - 2), z = c + len + 1;
+      const up = b > 0 ? rows[b - 1].slice(a, z).trim() : "", lo = b + 1 < rows.length ? rows[b + 1].slice(a, z).trim() : "";
+      s += "Σ" + (lo ? "_{" + lo + "}" : "") + (up ? "^{" + up + "}" : "");
+      c += len - 1; continue;
+    }
+    s += ch0;
+  }
+  return s.trim();
+}
+/* Convierte filas del archivo (ya editadas) a renglones del cuaderno.
+   keep: texto de una fila sin cambios → su renglón original (así no se pierden tildes ni gráficos). */
+function reverseText(lines, keep, joinPlain) {
+  const out = []; let k = 0;
+  const plainIdx = [];
+  while (k < lines.length) {
+    const l = lines[k];
+    if (keep.has(l) && l.trim()) { out.push(...keep.get(l)); k++; continue; }
+    let m = l.match(/^=== (.*) ===$/);
+    if (m) { out.push("# " + m[1]); k++; continue; }
+    // Tabla
+    if (l.includes("|") && (isSepRow(lines[k + 1]) || (lines[k + 1] || "").includes("|"))) {
+      while (k < lines.length && (lines[k].includes("|") || isSepRow(lines[k]))) {
+        const r = lines[k];
+        if (isSepRow(r)) out.push("|" + r.trim().split("+").map(() => "---").join("|") + "|");
+        else out.push("| " + r.split("|").map(c => c.trim().replace(/\s*\*\s*/g, "·")).join(" | ") + " |");
+        k++;
+      }
+      continue;
+    }
+    // Fórmula dibujada: un bloque entre renglones vacíos que tiene una barra de fracción
+    const start = l.trim() ? k : k + 1;
+    let j = start;
+    while (j < lines.length && lines[j].trim()) j++;
+    const chunk = lines.slice(start, j);
+    if (isArtChunk(chunk)) {
+      const key = lines.slice(k, j + 1).join("\n");
+      out.push(keep.has(key) ? keep.get(key)[0] : convFormula(artLinear(chunk)));
+      k = j + (j < lines.length ? 1 : 0);
+      continue;
+    }
+    if (!l.trim()) { out.push(""); k++; continue; }
+    if (/^-{21}$/.test(l.trim())) { out.push("---"); k++; continue; }
+    m = l.match(/^\[Imagen: (.*)\]$/);
+    if (m) { out.push("img: " + m[1]); k++; continue; }
+    plainIdx.push(out.length);
+    out.push(isFormulaLine(l) ? convFormula(l.trim()) : l.replace(/\s+$/, ""));
+    k++;
+  }
+  if (!joinPlain) return out;
+  // Párrafo que estaba cortado en varias filas: se vuelve a juntar en un solo renglón
+  const res = [];
+  out.forEach((l, k) => {
+    const prev = res.length - 1;
+    if (plainIdx.includes(k) && k > 0 && plainIdx.includes(k - 1) && res[prev] && l.trim()) res[prev] += " " + l.trim();
+    else res.push(l);
+  });
+  return res;
+}
+
+/* ---------- Contenido de ejemplo ---------- */
+const SAMPLE_FIN = `# Interés simple
+I = C·i·n
+M = C·(1 + i·n)
+C = {M}/{1 + i·n}
+i y n tienen que estar en la misma unidad de tiempo.
+
+# Interés compuesto
+M = C·(1+i)^n
+C = {M}/{(1+i)^n}
+i = ({M}/{C})^{1/n} - 1
+n = {log(M/C)}/{log(1+i)}
+
+# Tasas
+Proporcional: i_m = {j}/{m}
+Equivalentes:
+(1+i_1)^{m_1} = (1+i_2)^{m_2}
+TEA = (1 + {TNA}/{m})^m - 1
+
+# Descuento comercial
+D = N·d·n
+V = N·(1 - d·n)
+i = {d}/{1 - d}    d = {i}/{1 + i}
+
+# Rentas vencidas
+VA = c·{1 - (1+i)^-n}/{i}
+VF = c·{(1+i)^n - 1}/{i}
+Adelantadas: multiplicar por (1+i).
+
+# Sistema francés
+c = V·{i}/{1 - (1+i)^-n}
+t_1 = c - V·i
+t_k = t_1·(1+i)^{k-1}
+| k | Cuota | Interés | Amort. |
+|---|---|---|---|
+| 1 | c | V·i | t_1 |
+| 2 | c | V_1·i | t_2 |
+
+# VAN y TIR
+VAN = -I_0 + Σ_{t=1}^{n} {FF_t}/{(1+k)^t}
+TIR: la tasa que hace VAN = 0.
+Si VAN > 0 el proyecto conviene.
+
+# Monto compuesto (gráfico)
+graf: x=0..20; y=1000(1.05)^x; y=1000(1+0.05x)
+Llena: compuesto. Punteada: simple.
+`;
+const SAMPLE_COST = `# Margen de contribución
+mc = p - cv
+MC = Q·(p - cv)
+Razón = {p - cv}/{p}
+
+# Punto de equilibrio
+Q_e = {CF}/{p - cv}
+$_e = {CF}/{1 - {cv}/{p}}
+Con utilidad deseada U:
+Q = {CF + U}/{p - cv}
+
+# Gráfico de equilibrio
+graf: x=0..100; y=50x; y=2000+30x; alto=36
+Ingresos (llena) y costos totales (punteada). Se cruzan en Q_e = 100.
+
+# Resultado
+U = Q·(p - cv) - CF
+Margen de seguridad:
+MS = {V_r - V_e}/{V_r}
+`;
+
+/* ---------- Estado y UI ---------- */
+const KEY = "casioApuntes.v1";
+let state;
+try { state = JSON.parse(localStorage.getItem(KEY)); } catch (e) { state = null; }
+if (!state || !Array.isArray(state.nbs) || !state.nbs.length) {
+  state = { cur: 0, nbs: [
+    { title: "Matemática financiera", file: "finanzas", text: SAMPLE_FIN },
+    { title: "Costos", file: "costos", text: SAMPLE_COST }
+  ] };
+}
+for (const n of state.nbs) { n.mode = n.mode || "draw"; n.images = n.images || {}; n.wide = !!n.wide; n.uni = !!n.uni; }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { alert("No se pudo guardar (¿demasiadas imágenes?)."); } };
+const $ = id => document.getElementById(id);
+const src = $("src"), nbSel = $("nb"), fname = $("fname"), lcd = $("lcd"), ctx = lcd.getContext("2d");
+let doc = null, tdoc = null, page = 0, followCaret = true;
+
+const nb = () => state.nbs[state.cur];
+const opts = () => ({ wide: nb().wide, uni: nb().uni, images: nb().images });
+function fillNbs() {
+  nbSel.innerHTML = "";
+  state.nbs.forEach((n, k) => { const o = document.createElement("option"); o.value = k; o.textContent = n.title; nbSel.appendChild(o); });
+  nbSel.value = state.cur;
+  src.value = nb().text; fname.value = nb().file;
+  $("wide").checked = nb().wide; $("uni").checked = nb().uni;
+}
+const cleanName = v => v.toLowerCase().normalize("NFD").replace(/[^a-z0-9_]/g, "").slice(0, 8) || "apuntes";
+
+function exportFiles() {
+  if (nb().mode === "draw") return [{ name: nb().file + ".py", body: buildPython(doc, nb().file) }];
+  const eol = s => s.replace(/\n/g, "\r\n");
+  return tdoc.files.map(f => ({ name: f.name + ".py", body: eol(f.lines.join("\n") + "\n") }));
+}
+function render() {
+  const mode = nb().mode;
+  document.querySelectorAll("#modeSeg button").forEach(b => b.classList.toggle("on", b.dataset.m === mode));
+  $("drawView").hidden = mode !== "draw"; $("textView").hidden = mode !== "text"; $("calcView").hidden = mode !== "text";
+  $("uniWrap").style.display = mode === "text" ? "" : "none";
+  $("modeHint").textContent = mode === "draw"
+    ? "Se ejecuta con RUN. Fórmulas dibujadas, tablas, gráficos, imágenes y buscador. Abierto en el editor se ve como código."
+    : "Se abre en el editor y se lee con las flechas, como tus archivos de siempre. Hasta 150 filas por archivo: si hay más, se divide solo.";
+  doc = buildDoc(src.value, opts());
+  tdoc = buildText(src.value, opts(), nb().file);
+  let warns = doc.warns;
+  if (mode === "draw") renderDraw();
+  else { renderText(); warns = warns.filter(w => !/ancha que la pantalla/.test(w)); }
+  const w = $("warns"); w.innerHTML = "";
+  for (const m of [...new Set(warns)]) { const d = document.createElement("div"); d.className = "warn"; d.textContent = m; w.appendChild(d); }
+  const files = exportFiles(), bytes = files.reduce((t, f) => t + new Blob([f.body]).size, 0);
+  const kb = (bytes / 1024).toFixed(1);
+  $("dl").textContent = files.length > 1 ? `Descargar ${files.length} archivos` : `Descargar ${files[0].name}`;
+  $("stats").innerHTML = mode === "draw"
+    ? `${doc.pages.length} páginas · ${kb} KB · ${files[0].body.split("\n").length - 1} líneas de código`
+    : `${files.length} archivo${files.length > 1 ? "s" : ""} (${tdoc.files.map(f => f.name + ".py: " + f.lines.length + " filas").join(" · ")})`;
+  updStatus();
+  if (mode === "draw" && bytes > 24 * 1024) $("stats").innerHTML += `<div class="warn">El archivo es grande (${kb} KB). Si la calculadora da error de memoria (MemoryError), pasá algunas páginas a otro cuaderno o usá imágenes más chicas.</div>`;
+}
+function renderDraw() {
+  if (followCaret) {
+    const line = src.value.slice(0, src.selectionStart).split("\n").length - 1;
+    page = 0;
+    doc.pages.forEach((p, k) => { if (p.src <= line) page = k; });
+  }
+  page = Math.max(0, Math.min(page, doc.pages.length - 1));
+  drawLcd();
+  const list = $("pages"); list.innerHTML = "";
+  doc.pages.forEach((p, k) => {
+    const d = document.createElement("div");
+    d.className = k === page ? "on" : "";
+    d.innerHTML = `<b>${k + 1}</b><span></span>`;
+    d.lastChild.textContent = p.title + (p.segs > 1 ? `  ⇆ ${p.segs} partes` : "");
+    d.onclick = () => { followCaret = false; page = k; render(); };
+    list.appendChild(d);
+  });
+  const sel = list.children[page]; if (sel) sel.scrollIntoView({ block: "nearest" });
+  $("ptitle").textContent = `${page + 1}/${doc.pages.length} · ${doc.pages[page].title}`;
+}
+function drawLcd() {
+  const p = doc.pages[page], s = 4, gap = 14;
+  lcd.width = p.segs * W * s + (p.segs - 1) * gap; lcd.height = H * s;
+  lcd.style.width = p.segs === 1 ? "100%" : lcd.width * 0.75 + "px";
+  lcd.style.maxWidth = p.segs === 1 ? "512px" : "none";
+  const cs = getComputedStyle(document.documentElement);
+  for (let k = 0; k < p.segs; k++) {
+    const nx = doc.pages[page + 1], more = k < p.segs - 1 || (!!nx && nx.topic === p.topic);
+    const px = rasterize(p.ops, k * SEG, more), ox = k * (W * s + gap);
+    ctx.fillStyle = cs.getPropertyValue("--lcd-bg"); ctx.fillRect(ox, 0, W * s, H * s);
+    ctx.fillStyle = cs.getPropertyValue("--lcd-px");
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (px[y * W + x]) ctx.fillRect(ox + x * s, y * s, s - 0.6, s - 0.6);
+  }
+}
+/* Pantalla simulada del editor de Python (modo texto) */
+const TROWS = 6, tlcd = $("tlcd"), tctx = tlcd.getContext("2d");
+const tv = { file: 0, top: 0, left: 0, hi: -1 };
+function followTextCaret() {
+  const line = src.value.slice(0, src.selectionStart).split("\n").length - 1;
+  let best = null;
+  tdoc.files.forEach((f, fi) => f.src.forEach((s, k) => { if (s >= 0 && s <= line && (!best || s >= best.s)) best = { fi, k, s }; }));
+  if (!best) { tv.hi = -1; return; }
+  // primera fila del archivo que sale de esa línea del editor
+  const f = tdoc.files[best.fi]; let k = best.k;
+  while (k > 0 && f.src[k - 1] === best.s) k--;
+  tv.file = best.fi; tv.hi = k;
+  if (k < tv.top || k >= tv.top + TROWS) tv.top = Math.max(0, k - 1);
+  tv.left = 0;
+}
+function clampTv() {
+  tv.file = Math.max(0, Math.min(tv.file, tdoc.files.length - 1));
+  const f = tdoc.files[tv.file], maxLen = Math.max(0, ...f.lines.map(l => l.length));
+  tv.top = Math.max(0, Math.min(tv.top, f.lines.length - TROWS));
+  tv.left = Math.max(0, Math.min(tv.left, maxLen - TXT_W));
+}
+function drawTextLcd() {
+  clampTv();
+  const f = tdoc.files[tv.file], s = 4, cs = getComputedStyle(document.documentElement);
+  const bg = cs.getPropertyValue("--lcd-bg"), fg = cs.getPropertyValue("--lcd-px");
+  tlcd.width = W * s; tlcd.height = H * s; tlcd.style.width = "100%"; tlcd.style.maxWidth = "284px";
+  tctx.fillStyle = bg; tctx.fillRect(0, 0, W * s, H * s);
+  const dot = (x, y, c) => { tctx.fillStyle = c; tctx.fillRect(x * s, y * s, s - 0.6, s - 0.6); };
+  const glyphAt = (c, x, y, col) => {
+    const k = ch(c).c, g = FONT[k], dx = g.cols.length < 5 ? (5 - g.cols.length) >> 1 : 0;
+    g.cols.forEach((b, i) => { for (let r = 0; r < 8; r++) if (b >> r & 1 && y + r < H) dot(x + dx + i, y + r, col); });
+  };
+  // Barra de arriba (nombre del archivo), en negativo
+  for (let y = 0; y < 8; y++) for (let x = 0; x < W; x++) dot(x, y, fg);
+  [...(f.name + ".py")].slice(0, 13).forEach((c, i) => glyphAt(c, 1 + i * 6, 0, bg));
+  const pos = String(tv.top + 1);
+  [...pos].forEach((c, i) => glyphAt(c, W - 1 - (pos.length - i) * 6, 0, bg));
+  // Renglones
+  for (let r = 0; r < TROWS; r++) {
+    const k = tv.top + r, line = f.lines[k];
+    if (line === undefined) continue;
+    [...line.slice(tv.left, tv.left + TXT_W)].forEach((c, i) => { if (c !== " ") glyphAt(c, i * 6, 8 + r * 8, fg); });
+    if (k === tv.hi) for (let y = 8 + r * 8; y < 16 + r * 8; y++) dot(127, y, fg);
+  }
+  // Barra de teclas F1–F6 (solo de referencia)
+  for (let j = 0; j < 6; j++) for (let x = j * 21 + 1; x < j * 21 + 20; x++) for (let y = 57; y < H; y++) dot(x, y, fg);
+  const maxLen = Math.max(0, ...f.lines.map(l => l.length));
+  $("tpos").textContent = `Filas ${tv.top + 1}–${Math.min(tv.top + TROWS, f.lines.length)} de ${f.lines.length}` + (maxLen > TXT_W ? ` · columnas ${tv.left + 1}–${tv.left + TXT_W} de ${maxLen}` : "");
+  const sel = $("tfile");
+  sel.hidden = tdoc.files.length < 2;
+  if (!sel.hidden) {
+    sel.innerHTML = tdoc.files.map((x, i) => `<option value="${i}">${x.name}.py</option>`).join("");
+    sel.value = tv.file;
+  }
+}
+const tmove = (dr, dc) => { tv.top += dr; tv.left += dc; drawTextLcd(); };
+$("tUp").onclick = () => tmove(-1, 0); $("tDown").onclick = () => tmove(1, 0);
+$("tLeft").onclick = () => tmove(0, -1); $("tRight").onclick = () => tmove(0, 1);
+$("tfile").onchange = e => { tv.file = +e.target.value; tv.top = 0; tv.left = 0; tv.hi = -1; drawTextLcd(); };
+tlcd.addEventListener("keydown", e => {
+  const m = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1], PageUp: [-TROWS, 0], PageDown: [TROWS, 0] }[e.key];
+  if (m) { e.preventDefault(); tmove(m[0], m[1]); }
+});
+
+/* ---------- Panel derecho editable, conectado en vivo con el cuaderno ---------- */
+const txtEdit = $("txtEdit"), gut2 = $("gut2");
+let rightDirty = false, rtimer = null, lastOut = null;
+function flatOut() {
+  const o = { lines: [], src: [], end: [], kind: [], fileOf: [], rowOf: [] };
+  tdoc.files.forEach((f, fi) => f.lines.forEach((l, k) => {
+    o.lines.push(l); o.src.push(f.src[k]); o.end.push(f.end[k]); o.kind.push(f.kind[k]); o.fileOf.push(fi); o.rowOf.push(k);
+  }));
+  return o;
+}
+const caretLC = ta => { const b = ta.value.slice(0, ta.selectionStart); return { line: b.split("\n").length - 1, col: ta.selectionStart - b.lastIndexOf("\n") - 1 }; };
+function setCaretLC(ta, { line, col }) {
+  const ls = ta.value.split("\n"); line = Math.min(line, ls.length - 1);
+  const pos = ls.slice(0, line).reduce((t, l) => t + l.length + 1, 0) + Math.min(col, ls[line].length);
+  ta.selectionStart = ta.selectionEnd = pos;
+}
+function updGut2() {
+  if (!lastOut) return;
+  const n = txtEdit.value.split("\n").length, cur = caretLC(txtEdit).line;
+  let s = "";
+  for (let k = 0; k < n; k++) {
+    const num = k < lastOut.rowOf.length ? lastOut.rowOf[k] + 1 : k + 1;
+    s += (k === cur && document.activeElement === txtEdit ? `<b>${num}</b>` : num) + "\n";
+  }
+  gut2.innerHTML = s + "\n";
+  gut2.scrollTop = txtEdit.scrollTop;
+}
+function followRightCaret() {
+  if (!lastOut || !lastOut.lines.length) return;
+  const { line, col } = caretLC(txtEdit), L = Math.min(line, lastOut.lines.length - 1);
+  tv.file = lastOut.fileOf[L]; tv.hi = lastOut.rowOf[L];
+  if (tv.hi < tv.top || tv.hi >= tv.top + TROWS) tv.top = Math.max(0, tv.hi - 1);
+  if (col < tv.left || col >= tv.left + TXT_W) tv.left = Math.max(0, col - TXT_W + 1);
+}
+/* Saca las filas automáticas (índice, "Sigue en…", "(sigue)") de lo que escribió el usuario */
+function stripAuto(lines) {
+  const out = [];
+  for (let k = 0; k < lines.length; k++) {
+    const l = lines[k];
+    if (l === "INDICE (fila):") { while (k < lines.length && lines[k] !== "") k++; continue; }
+    if (/^>> Sigue en .*\.py$/.test(l)) { if (out.length && out[out.length - 1] === "") out.pop(); continue; }
+    if (/^=== .* \(sigue\) ===$/.test(l)) continue;
+    out.push(l);
+  }
+  return out;
+}
+/* Lleva los cambios del panel derecho al cuaderno: busca qué parte cambió, de qué renglones salía,
+   y la traduce de vuelta (fracciones dibujadas → {a}/{b}, === Título === → # Título, etc.) */
+function applyRight() {
+  clearTimeout(rtimer);
+  if (!rightDirty || !lastOut) return;
+  rightDirty = false;
+  const idx = lastOut.src.map((s, k) => k).filter(k => lastOut.src[k] >= 0);
+  const old = idx.map(k => lastOut.lines[k]), osrc = idx.map(k => lastOut.src[k]), oend = idx.map(k => lastOut.end[k]), okind = idx.map(k => lastOut.kind[k]);
+  const neu = stripAuto(txtEdit.value.replace(/\r/g, "").split("\n"));
+  let p = 0;
+  while (p < old.length && p < neu.length && old[p] === neu[p]) p++;
+  let q = 0;
+  while (q < old.length - p && q < neu.length - p && old[old.length - 1 - q] === neu[neu.length - 1 - q]) q++;
+  let a = p, z = old.length - q;
+  if (a === z && neu.length === old.length) { render(); return; }
+  // Agrandar a bloques completos (todas las filas que salen del mismo renglón)
+  if (a < z || (a > 0 && a < old.length && osrc[a - 1] === osrc[a])) {
+    while (a > 0 && osrc[a - 1] === osrc[a]) a--;
+    while (z < old.length && z > 0 && osrc[z] === osrc[z - 1]) z++;
+  }
+  const region = neu.slice(a, neu.length - (old.length - z));
+  const srcLines = src.value.replace(/\r/g, "").split("\n");
+  let sA, sZ;
+  if (a < z) { sA = Math.min(...osrc.slice(a, z)); sZ = Math.max(...oend.slice(a, z)); }
+  else { sA = a > 0 ? oend[a - 1] + 1 : (old.length ? osrc[0] : srcLines.length); sZ = sA - 1; }
+  // Filas que no cambiaron conservan su renglón original (tildes, gráficos…)
+  const keep = new Map();
+  for (let k = a; k < z;) {
+    let j = k; while (j < z && osrc[j] === osrc[k]) j++;
+    const g = old.slice(k, j), orig = srcLines.slice(osrc[k], oend[k] + 1);
+    keep.set(g.length === 1 ? g[0] : g.join("\n"), orig);
+    k = j;
+  }
+  const oneText = a < z && osrc.slice(a, z).every(s => s === osrc[a]) && okind[a] === "text" && z - a > 1;
+  const rev = reverseText(region, keep, oneText);
+  srcLines.splice(sA, sZ - sA + 1, ...rev);
+  const caret = caretLC(txtEdit), st = txtEdit.scrollTop, focused = document.activeElement === txtEdit;
+  src.value = srcLines.join("\n"); nb().text = src.value; save();
+  render();
+  if (focused) { setCaretLC(txtEdit, caret); txtEdit.scrollTop = st; followRightCaret(); drawTextLcd(); updGut2(); }
+  updStatus();
+}
+txtEdit.addEventListener("input", () => {
+  rightDirty = true; updGut2();
+  clearTimeout(rtimer); rtimer = setTimeout(applyRight, 700);
+});
+txtEdit.addEventListener("blur", () => { if (rightDirty) applyRight(); updGut2(); });
+txtEdit.addEventListener("scroll", () => { gut2.scrollTop = txtEdit.scrollTop; });
+for (const ev of ["click", "keyup", "focus"]) txtEdit.addEventListener(ev, () => { if (tdoc) { followRightCaret(); drawTextLcd(); updGut2(); } });
+
+function renderText() {
+  lastOut = flatOut();
+  if (!rightDirty) {
+    const v = lastOut.lines.join("\n");
+    if (txtEdit.value !== v) txtEdit.value = v;
+  }
+  if (document.activeElement === txtEdit) followRightCaret();
+  else if (followCaret) followTextCaret();
+  drawTextLcd();
+  updGut2();
+}
+
+
+/* Números de fila al costado y barra de estado */
+const gut = $("gut");
+const fmt = n => n.toLocaleString("es-AR");
+function caretInfo() {
+  const v = src.value, p = src.selectionStart;
+  const before = v.slice(0, p), line = before.split("\n").length;
+  const start = before.lastIndexOf("\n") + 1, end = v.indexOf("\n", p);
+  return { line, col: p - start + 1, len: (end < 0 ? v.length : end) - start, total: v.split("\n").length };
+}
+function updGutter() {
+  const { line, total } = caretInfo();
+  let s = "";
+  for (let k = 1; k <= total; k++) s += (k === line ? `<b>${k}</b>` : k) + "\n";
+  gut.innerHTML = s + "\n";
+  gut.scrollTop = src.scrollTop;
+}
+function updStatus() {
+  const c = caretInfo(), chars = [...src.value].length;
+  let out = `<span>Fila <b>${fmt(c.line)}</b> de ${fmt(c.total)}</span>`
+    + `<span>Carácter <b>${fmt(c.col)}</b> · este renglón tiene ${fmt(c.len)}</span>`
+    + `<span>Total: <b>${fmt(chars)}</b> caracteres</span>`;
+  if (nb().mode === "text" && tdoc) {
+    out += tdoc.files.map(f => `<span class="${f.lines.length > MAXL ? "over" : ""}">${f.name}.py: <b>${f.lines.length}</b>/${MAXL} filas</span>`).join("");
+  } else if (doc) out += `<span>${nb().file}.py: <b>${doc.pages.length}</b> páginas</span>`;
+  $("status").innerHTML = out;
+  updGutter();
+}
+src.addEventListener("scroll", () => { gut.scrollTop = src.scrollTop; });
+for (const ev of ["click", "keyup", "select", "focus"]) src.addEventListener(ev, updStatus);
+
+let timer;
+src.addEventListener("input", () => { nb().text = src.value; save(); updStatus(); followCaret = true; clearTimeout(timer); timer = setTimeout(render, 150); });
+for (const ev of ["click", "keyup"]) src.addEventListener(ev, () => {
+  followCaret = true;
+  if (nb().mode === "draw") render();
+  else if (tdoc) { followTextCaret(); drawTextLcd(); }
+});
+fname.addEventListener("change", () => { nb().file = cleanName(fname.value); fname.value = nb().file; save(); render(); });
+nbSel.addEventListener("change", () => { state.cur = +nbSel.value; save(); fillNbs(); followCaret = true; render(); });
+$("wide").onchange = e => { nb().wide = e.target.checked; save(); render(); };
+$("uni").onchange = e => { nb().uni = e.target.checked; save(); render(); };
+document.querySelectorAll("#modeSeg button").forEach(b => b.onclick = () => { nb().mode = b.dataset.m; save(); render(); });
+$("nbNew").onclick = () => {
+  const t = prompt("Nombre del cuaderno (por ej. Estadística):"); if (!t) return;
+  state.nbs.push({ title: t, file: cleanName(t), text: "# " + t + "\n", mode: "draw", images: {}, wide: false, uni: false });
+  state.cur = state.nbs.length - 1; save(); fillNbs(); render(); src.focus();
+};
+$("nbDel").onclick = () => {
+  if (state.nbs.length < 2) { alert("Tiene que quedar al menos un cuaderno."); return; }
+  if (!confirm(`¿Borrar el cuaderno “${nb().title}”? No se puede deshacer.`)) return;
+  state.nbs.splice(state.cur, 1); state.cur = 0; save(); fillNbs(); render();
+};
+$("prev").onclick = () => { followCaret = false; page = Math.max(0, page - 1); render(); };
+$("next").onclick = () => { followCaret = false; page++; render(); };
+$("dl").onclick = () => {
+  exportFiles().forEach((f, k) => setTimeout(() => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([f.body], { type: "text/plain" }));
+    a.download = f.name; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }, k * 400));
+};
+$("copy").onclick = async () => {
+  try { await navigator.clipboard.writeText(exportFiles().map(f => f.body).join("\n\n")); $("copy").textContent = "¡Copiado!"; }
+  catch (e) { $("copy").textContent = "No se pudo copiar"; }
+  setTimeout(() => $("copy").textContent = "Copiar código", 1500);
+};
+
+function insertAtCursor(ins, caretIn) {
+  const p = src.selectionStart, q = src.selectionEnd, v = src.value;
+  let caret = p + caretIn;
+  if (q > p && ins.includes("{}")) { ins = ins.replace("{}", "{" + v.slice(p, q) + "}"); caret = p + ins.length; }
+  src.value = v.slice(0, p) + ins + v.slice(q);
+  src.focus(); src.selectionStart = src.selectionEnd = caret;
+  src.dispatchEvent(new Event("input"));
+}
+function insertLine(text) {
+  const v = src.value, p = src.selectionStart;
+  const nl = v.indexOf("\n", p), end = nl < 0 ? v.length : nl;
+  const pre = end > 0 && v[end - 1] !== "\n" ? "\n" : "";
+  src.selectionStart = src.selectionEnd = end;
+  insertAtCursor(pre + text, (pre + text).length);
+}
+
+/* Barra de herramientas */
+const TOOLS = [
+  ["a/b", "{}/{}", 1, "Fracción"], ["xⁿ", "^{}", 2, "Exponente"], ["xₙ", "_{}", 2, "Subíndice"],
+  ["√", "sqrt{}", 5, "Raíz"], ["x̄", "bar{}", 4, "Barra arriba"], ["Σ", "Σ_{i=1}^{n} ", 3, "Sumatoria"], null,
+  ["▦ Tabla", () => insertLine("| Col 1 | Col 2 | Col 3 |\n|---|---|---|\n| a | b | c |"), 0, "Insertar tabla"],
+  ["📈 Gráfico", () => insertLine("graf: x=0..10; y=x^2"), 0, "Insertar gráfico"],
+  ["🖼 Imagen", () => openImg(), 0, "Insertar imagen"],
+  ["📥 Importar texto", () => openImport(), 0, "Pegar apuntes y ordenarlos solos"], null,
+  ..."· × ÷ ± ≤ ≥ ≠ ≈ ∞ → ⇒ ° π Δ Σ α β δ θ λ μ σ ∫".split(" ").map(c => [c, c, c.length]), null,
+  ..."á é í ó ú ñ ¿ ¡".split(" ").map(c => [c, c, c.length])
+];
+for (const t of TOOLS) {
+  if (!t) { const s = document.createElement("span"); s.className = "sep"; $("tools").appendChild(s); continue; }
+  const b = document.createElement("button");
+  b.textContent = t[0]; if (t[3]) b.title = t[3];
+  b.onclick = typeof t[1] === "function" ? t[1] : () => insertAtCursor(t[1], t[2]);
+  $("tools").appendChild(b);
+}
+
+/* ---------- Importar imagen ---------- */
+let imgSrc = null, imgRes = null;
+const dlg = $("imgDlg");
+function openImg() {
+  imgSrc = null; imgRes = null; $("imgFile").value = ""; $("imgN").value = "";
+  $("imgPrev").getContext("2d").clearRect(0, 0, 384, 192);
+  dlg.showModal();
+}
+$("imgFile").onchange = e => {
+  const file = e.target.files[0]; if (!file) return;
+  const im = new Image();
+  im.onload = () => { imgSrc = im; $("imgN").value = $("imgN").value || cleanName(file.name.replace(/\.[^.]*$/, "")); updImg(); };
+  im.src = URL.createObjectURL(file);
+};
+for (const id of ["imgW", "imgT", "imgD", "imgI"]) $(id).oninput = updImg;
+function updImg() {
+  $("imgWv").textContent = $("imgW").value + " px"; $("imgTv").textContent = $("imgT").value;
+  if (!imgSrc) return;
+  let w = +$("imgW").value, h = Math.round(w * imgSrc.height / imgSrc.width);
+  if (h > H) { h = H; w = Math.max(1, Math.round(H * imgSrc.width / imgSrc.height)); }
+  h = Math.max(1, h);
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  const cx = c.getContext("2d"); cx.fillStyle = "#fff"; cx.fillRect(0, 0, w, h); cx.drawImage(imgSrc, 0, 0, w, h);
+  const d = cx.getImageData(0, 0, w, h).data, g = new Float32Array(w * h), bits = new Uint8Array(w * h), thr = +$("imgT").value;
+  for (let k = 0; k < w * h; k++) g[k] = 0.299 * d[k * 4] + 0.587 * d[k * 4 + 1] + 0.114 * d[k * 4 + 2];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const k = y * w + x, v = g[k], nv = v < thr ? 0 : 255, err = v - nv;
+    bits[k] = nv === 0 ? 1 : 0;
+    if ($("imgD").checked) {
+      if (x + 1 < w) g[k + 1] += err * 7 / 16;
+      if (y + 1 < h) { if (x > 0) g[k + w - 1] += err * 3 / 16; g[k + w] += err * 5 / 16; if (x + 1 < w) g[k + w + 1] += err / 16; }
+    }
+  }
+  if ($("imgI").checked) for (let k = 0; k < bits.length; k++) bits[k] ^= 1;
+  imgRes = { w, h, hex: bitsToHex(bits, w, h) };
+  const pc = $("imgPrev"), px = pc.getContext("2d"), cs = getComputedStyle(document.documentElement);
+  px.fillStyle = cs.getPropertyValue("--lcd-bg"); px.fillRect(0, 0, 384, 192);
+  const ox = (W - w) >> 1; px.fillStyle = cs.getPropertyValue("--lcd-px");
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (bits[y * w + x]) px.fillRect((ox + x) * 3, y * 3, 3, 3);
+}
+$("imgCancel").onclick = () => dlg.close();
+$("imgOk").onclick = () => {
+  if (!imgRes) { alert("Primero elegí una imagen."); return; }
+  const name = ($("imgN").value.trim() || "imagen").replace(/\s+/g, "_");
+  nb().images[name] = imgRes;
+  dlg.close();
+  insertLine("img: " + name);
+};
+updImg();
+
+/* ---------- Importar texto: ordena apuntes con reglas (sin IA) ---------- */
+const OPEN = { "(": ")", "{": "}" }, CLOSE = { ")": "(", "}": "{" };
+const IDC = /[A-Za-z0-9_.ÁÉÍÓÚÑáéíóúñ]/;
+function matchFwd(s, j) {
+  const o = s[j], c = OPEN[o]; let d = 0;
+  for (let k = j; k < s.length; k++) { if (s[k] === o) d++; else if (s[k] === c && --d === 0) return k; }
+  return -1;
+}
+function matchBack(s, j) {
+  const c = s[j], o = CLOSE[c]; let d = 0;
+  for (let k = j; k >= 0; k--) { if (s[k] === c) d++; else if (s[k] === o && --d === 0) return k; }
+  return -1;
+}
+/* Operando a la izquierda de s[i] (sin contar espacios). Devuelve {start,end} o null */
+function leftOp(s, i) {
+  let k = i - 1;
+  while (k >= 0 && s[k] === " ") k--;
+  const end = k + 1;
+  const atom = () => {
+    if (CLOSE[s[k]]) { const o = matchBack(s, k); if (o < 0) return false; k = o - 1; while (k >= 0 && /[A-Za-z]/.test(s[k])) k--; return true; }
+    if (k >= 0 && IDC.test(s[k])) { while (k >= 0 && IDC.test(s[k])) k--; return true; }
+    return false;
+  };
+  if (!atom()) return null;
+  for (;;) {
+    if (s[k] === "^" || s[k] === "_") { k--; if (!atom()) return null; continue; }
+    if ((s[k] === "-" || s[k] === "+") && s[k - 1] === "^") { k -= 2; if (!atom()) return null; continue; }
+    break;
+  }
+  return { start: k + 1, end };
+}
+function rightOp(s, i) {
+  let k = i + 1;
+  while (s[k] === " ") k++;
+  const start = k;
+  const atom = () => {
+    if (OPEN[s[k]]) { const c = matchFwd(s, k); if (c < 0) return false; k = c + 1; return true; }
+    if (k < s.length && IDC.test(s[k])) {
+      while (k < s.length && IDC.test(s[k])) k++;
+      if (s[k] === "(") { const c = matchFwd(s, k); if (c < 0) return false; k = c + 1; }
+      return true;
+    }
+    return false;
+  };
+  if (s[k] === "-") k++;
+  if (!atom()) return null;
+  while (s[k] === "^" || s[k] === "_") { k++; if (s[k] === "-" || s[k] === "+") k++; if (!atom()) return null; }
+  return { start, end: k };
+}
+const stripOuter = t => (t[0] === "(" && matchFwd(t, 0) === t.length - 1) || (t[0] === "{" && matchFwd(t, 0) === t.length - 1) ? t.slice(1, -1) : t;
+function convFrac(s) {
+  for (let guard = 0; guard < 50; guard++) {
+    let d = 0, at = -1;
+    for (let k = 0; k < s.length; k++) {
+      const c = s[k];
+      if (c === "(" || c === "{") d++;
+      else if (c === ")" || c === "}") d--;
+      else if (c === "/" && d === 0 && !(s[k - 1] === "}" && s[k + 1] === "{")) { at = k; break; }
+    }
+    if (at < 0) return s;
+    const L = leftOp(s, at), R = rightOp(s, at);
+    if (!L || !R) return s.slice(0, at + 1) + convFrac(s.slice(at + 1));
+    const a = convFrac(stripOuter(s.slice(L.start, L.end).trim())), b = convFrac(stripOuter(s.slice(R.start, R.end).trim()));
+    s = s.slice(0, L.start) + "{" + a + "}/{" + b + "}" + s.slice(R.end);
+  }
+  return s;
+}
+function convFormula(s) {
+  s = s.replace(/\*\*/g, "^");
+  // ^( … ) y _( … ) → llaves
+  for (let k = 0; k < s.length; k++) {
+    if ((s[k] === "^" || s[k] === "_") && s[k + 1] === "(") {
+      const c = matchFwd(s, k + 1);
+      if (c > 0) s = s.slice(0, k + 1) + "{" + s.slice(k + 2, c) + "}" + s.slice(c + 1);
+    }
+  }
+  // sqrt( … ) / raiz( … ) / √( … ) → sqrt{ … }
+  s = s.replace(/(sqrt|raiz|√)\s*\(/gi, "\u0001(");
+  for (let k = s.indexOf("\u0001"); k >= 0; k = s.indexOf("\u0001")) {
+    const c = matchFwd(s, k + 1);
+    s = c > 0 ? s.slice(0, k) + "sqrt{" + s.slice(k + 2, c) + "}" + s.slice(c + 1) : s.slice(0, k) + "sqrt" + s.slice(k + 1);
+  }
+  s = convFrac(convGroups(s));
+  return s.replace(/\s*\*\s*/g, "·");
+}
+/* Convierte fracciones dentro de paréntesis comunes (no los de funciones como log(…)) */
+function convGroups(s) {
+  for (let k = 0; k < s.length; k++) {
+    if (s[k] !== "(" || /[A-Za-z]/.test(s[k - 1] || "")) continue;
+    const c = matchFwd(s, k);
+    if (c < 0) continue;
+    const inner = convFrac(convGroups(s.slice(k + 1, c)));
+    s = s.slice(0, k + 1) + inner + s.slice(c);
+    k = k + inner.length + 1;
+  }
+  return s;
+}
+const isFormulaLine = l => /=/.test(l) && (/[\/^*]|sqrt|raiz|√/.test(l) || /^\s*[\wÁÉÍÓÚáéíóúñ$]{1,8}\s*=/.test(l));
+const isListItem = l => /^\s*([-*•·]|\d+[.)]|[a-z][.)])\s/.test(l);
+const isRuleLine = l => /^\s*[=\-_*]{3,}\s*$/.test(l);
+function isUpperTitle(l) {
+  const letters = l.replace(/[^A-Za-zÁÉÍÓÚÑáéíóúñ]/g, "");
+  return letters.length >= 3 && letters === letters.toUpperCase() && l.trim().length <= 60 && !/=/.test(l);
+}
+/* "LA INVESTIGACION DE OPERACIONES" → "La investigacion de operaciones" (las siglas cortas como VAN o TIR quedan) */
+function niceTitle(t) {
+  if (!isUpperTitle(t) || t.replace(/[^A-Za-z]/g, "").length < 8) return t;
+  let first = true;
+  return t.split(/(\s+)/).map(w => {
+    if (/^\s+$/.test(w)) return w;
+    const letters = w.replace(/[^A-Za-zÁÉÍÓÚÑ]/g, "");
+    let r = letters.length <= 3 && letters.length > 1 ? w : w.toLowerCase();
+    if (first && /[a-záéíóúñ]/i.test(r)) { r = r.replace(/[a-záéíóúñ]/i, c => c.toUpperCase()); first = false; }
+    return r;
+  }).join("");
+}
+function organize(text, o) {
+  const src = text.replace(/\r/g, "").replace(/ /g, " ").split("\n").map(l => l.replace(/\s+$/, ""));
+  const out = [];
+  for (let i = 0; i < src.length; i++) {
+    let l = src[i];
+    const next = src[i + 1] || "";
+    // Título subrayado (=== o ---) o en MAYÚSCULAS
+    if (o.titles && l.trim() && !isRuleLine(l) && (isRuleLine(next) || (isUpperTitle(l) && !l.startsWith("#") && !l.startsWith("|")))) {
+      if (out.length && out[out.length - 1] !== "") out.push("");
+      out.push("# " + niceTitle(l.trim().replace(/[:.]$/, "")));
+      if (isRuleLine(next)) i++;
+      continue;
+    }
+    if (isRuleLine(l)) { out.push(/^\s*-/.test(l) ? "---" : ""); continue; }
+    // Tablas copiadas de Excel (separadas con tabulaciones)
+    if (o.tables && l.includes("\t")) {
+      const rows = [];
+      while (i < src.length && src[i].includes("\t")) { rows.push(src[i].split("\t").map(c => c.trim())); i++; }
+      i--;
+      rows.forEach((r, k) => { out.push("| " + r.join(" | ") + " |"); if (k === 0 && rows.length > 1) out.push("|" + r.map(() => "---").join("|") + "|"); });
+      continue;
+    }
+    if (o.formulas && isFormulaLine(l)) {
+      // Las fórmulas van separadas del texto por un renglón en blanco
+      const prev = out[out.length - 1];
+      if (prev && prev !== "" && !prev.startsWith("#") && !prev.includes("{") && !isFormulaLine(prev) && !/:$/.test(prev)) out.push("");
+      out.push(convFormula(l.trim()));
+      const n = src[i + 1] || "";
+      if (n.trim() && !isFormulaLine(n) && !isRuleLine(n) && !/:$/.test(n.trim())) out.push("");
+      continue;
+    }
+    // Unir renglones cortados del mismo párrafo
+    if (o.join && l.trim()) {
+      while (i + 1 < src.length) {
+        const n = src[i + 1];
+        if (!n.trim() || isListItem(n) || isRuleLine(n) || n.startsWith("#") || n.includes("\t") || n.trim().startsWith("|")) break;
+        if (o.titles && (isUpperTitle(n) || isRuleLine(src[i + 2] || ""))) break;
+        if (isFormulaLine(n) || isFormulaLine(l) || /:$/.test(l)) break;
+        if (/:$/.test(n.trim()) && n.trim().length <= 40) break; // rótulo tipo "Valor actual:"
+        l = l + " " + n.trim(); i++;
+      }
+    }
+    out.push(l);
+  }
+  return out.join("\n").replace(/\n{3,}/g, "\n\n").trim() + "\n";
+}
+
+const impDlg = $("impDlg");
+const impOpts = () => ({ titles: $("impT").checked, join: $("impJ").checked, formulas: $("impF").checked, tables: $("impTab").checked });
+let impTab = "prev";
+const impDestNew = () => document.querySelector("input[name=impDest]:checked").value === "new";
+const impTargetMode = () => impDestNew() ? $("impMode").value : nb().mode;
+function updImport() {
+  $("impOut").value = $("impIn").value.trim() ? organize($("impIn").value, impOpts()) : "";
+  renderImpPrev();
+}
+/* Vista previa del resultado: páginas dibujadas o el archivo de texto, según el modo elegido */
+function renderImpPrev() {
+  const body = $("impOut").value, box = $("impPrev"), mode = impTargetMode();
+  $("impModeLbl").textContent = mode === "draw" ? "Modo dibujo" : "Modo texto (editor)";
+  const lines = body.split("\n");
+  const nT = lines.filter(l => l.startsWith("#")).length, nF = lines.filter(l => /\}\/\{|\^|sqrt\{/.test(l) && !l.startsWith("#")).length;
+  const nTab = lines.filter((l, k) => l.trim().startsWith("|") && !(lines[k - 1] || "").trim().startsWith("|")).length;
+  $("impSum").textContent = body.trim() ? `· ${nT} tema${nT === 1 ? "" : "s"} · ${nF} fórmula${nF === 1 ? "" : "s"}${nTab ? ` · ${nTab} tabla${nTab === 1 ? "" : "s"}` : ""}` : "";
+  $("impPrev").hidden = impTab !== "prev"; $("impOut").hidden = impTab !== "code";
+  if (impTab !== "prev") return;
+  if (!body.trim()) { box.innerHTML = `<div class="empty">Pegá tu texto a la izquierda y acá vas a ver cómo queda en la calculadora.</div>`; return; }
+  const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  if (mode === "text") {
+    const t = buildText(body, { wide: false, uni: false }, "vista");
+    box.innerHTML = t.files.map(f => `<pre>${f.lines.map(l => /^=== .* ===$/.test(l)
+      ? `<span class="t">${esc(l)}</span>`
+      : esc(l.slice(0, TXT_W)) + `<span class="off">${esc(l.slice(TXT_W))}</span>`).join("\n")}</pre>`).join("<hr>");
+    return;
+  }
+  const d = buildDoc(body, { wide: false, uni: false, images: {} }), cs = getComputedStyle(document.documentElement);
+  box.innerHTML = "";
+  d.pages.forEach((p, k) => {
+    const wrap = document.createElement("div"), cv = document.createElement("canvas"), s = 2;
+    wrap.className = "pg"; cv.width = W * s; cv.height = H * s;
+    const cx = cv.getContext("2d"), nx = d.pages[k + 1], px = rasterize(p.ops, 0, p.segs > 1 || (!!nx && nx.topic === p.topic));
+    cx.fillStyle = cs.getPropertyValue("--lcd-bg"); cx.fillRect(0, 0, cv.width, cv.height);
+    cx.fillStyle = cs.getPropertyValue("--lcd-px");
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (px[y * W + x]) cx.fillRect(x * s, y * s, s, s);
+    const cap = document.createElement("span"); cap.textContent = `${k + 1}. ${p.title}`;
+    wrap.append(cv, cap); box.appendChild(wrap);
+  });
+}
+function openImport() {
+  $("impIn").value = ""; $("impOut").value = ""; $("impFiles").value = ""; $("impName").value = "";
+  $("impMode").value = "text"; impTab = "prev";
+  document.querySelectorAll("#impTabs button").forEach(b => b.classList.toggle("on", b.dataset.v === "prev"));
+  renderImpPrev();
+  impDlg.showModal();
+}
+for (const id of ["impT", "impJ", "impF", "impTab"]) $(id).onchange = updImport;
+$("impIn").oninput = updImport;
+$("impOut").oninput = renderImpPrev;
+$("impMode").onchange = renderImpPrev;
+document.querySelectorAll("input[name=impDest]").forEach(r => r.onchange = renderImpPrev);
+document.querySelectorAll("#impTabs button").forEach(b => b.onclick = () => {
+  impTab = b.dataset.v;
+  document.querySelectorAll("#impTabs button").forEach(x => x.classList.toggle("on", x === b));
+  renderImpPrev();
+});
+$("impFiles").onchange = async e => {
+  const parts = [];
+  for (const f of e.target.files) {
+    let t = await f.text();
+    const first = t.split(/\r?\n/).find(l => l.trim()) || "";
+    if (!first.startsWith("#") && !isUpperTitle(first) && !isRuleLine(t.split(/\r?\n/)[1] || "")) t = "# " + f.name.replace(/\.[^.]*$/, "") + "\n" + t;
+    parts.push(t);
+  }
+  $("impIn").value = ($("impIn").value.trim() ? $("impIn").value + "\n\n" : "") + parts.join("\n\n");
+  if (!$("impName").value && e.target.files.length === 1) $("impName").value = e.target.files[0].name.replace(/\.[^.]*$/, "");
+  updImport();
+};
+$("impCancel").onclick = () => impDlg.close();
+$("impOk").onclick = () => {
+  const body = $("impOut").value.trim();
+  if (!body) { alert("Pegá algún texto o elegí un archivo."); return; }
+  if (document.querySelector("input[name=impDest]:checked").value === "add") {
+    nb().text = nb().text.replace(/\s*$/, "") + "\n\n" + body + "\n";
+  } else {
+    const t = $("impName").value.trim() || "Importado";
+    state.nbs.push({ title: t, file: cleanName(t), text: body + "\n", mode: $("impMode").value, images: {}, wide: false, uni: false });
+    state.cur = state.nbs.length - 1;
+  }
+  save(); impDlg.close(); fillNbs(); followCaret = false; page = 0; render();
+};
+
+fillNbs();
+render();
+window.__casio = { buildDoc, buildPython, buildText, rasterize, opts, organize, reverseText, artLinear };
+</script>
+</body>
+</html>
